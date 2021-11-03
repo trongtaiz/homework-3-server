@@ -7,7 +7,7 @@ import { Classes } from './classes/classes.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      url: 'mongodb+srv://trongtaiz:sZZ74PjiDjbS78f7@googlefakeclassroom.727fp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+      url: process.env.DB_URL,
       synchronize: true,
       useUnifiedTopology: true,
       entities: [Classes],
