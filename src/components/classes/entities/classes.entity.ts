@@ -1,9 +1,8 @@
-import { Column, Entity, PrimaryColumn, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Classes {
-  @PrimaryColumn()
-  @ObjectIdColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
