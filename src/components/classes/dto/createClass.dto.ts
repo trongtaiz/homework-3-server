@@ -1,6 +1,6 @@
 export class CreateClassDto {
-  name: string;
-  section: string;
-  subject: string;
-  room: string;
+  name!: string;
+  section!: string;
+  subject!: string;
+  room!: string;
 }

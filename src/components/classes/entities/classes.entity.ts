@@ -1,19 +1,19 @@
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('Classes')
 export class Classes {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column()
-  section: string;
+  section!: string;
 
   @Column()
-  subject: string;
+  subject!: string;
 
   @Column()
-  room: string;
+  room!: string;
 }

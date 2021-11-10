@@ -3,35 +3,32 @@ import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
+  HttpException,
+  Logger,
 } from '@nestjs/common';
-import { Response as ExpressResponse } from 'express';
-import { ExceptionResponse } from '@interfaces/exception-response.interface';
-import { HttpArgumentsHost } from '@nestjs/common/interfaces';
-
 @Catch()
 export default class AllExceptionsFilter implements ExceptionFilter {
-  catch(exception: any, host: ArgumentsHost) {
-    const ctx: HttpArgumentsHost = host.switchToHttp();
-    const res = ctx.getResponse<ExpressResponse>();
-    const exceptionMessage: string | null = exception.message || null;
-    const exceptionResponse: null | ExceptionResponse = exception.getResponse
-      ? (exception.getResponse() as ExceptionResponse)
-      : null;
-    const status: number = exception.getStatus ? exception.getStatus() : 500;
+  catch(exception: HttpException | any, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    const request = ctx.getRequest();
 
-    const mysqlCodes = {
-      duplicateError: 'ER_DUP_ENTRY',
-    };
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    if (exception.code === mysqlCodes.duplicateError) {
-      return res
-        .status(HttpStatus.CONFLICT)
-        .json({ message: exceptionMessage, error: exceptionResponse });
-    }
+    const message =
+      exception instanceof HttpException
+        ? exception.getResponse()
+        : 'INTERNAL_SERVER_ERROR';
 
-    return res.status(status).json({
-      message: exceptionMessage,
-      error: exceptionResponse,
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR) Logger.error(exception);
+
+    response.status(status).json({
+      statusCode: status,
+      message,    
+      path: request.url,
     });
   }
 }

@@ -12,11 +12,11 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "strict": true,
     "paths": {
       "@filters/*": [
         "./src/filters/*"
@@ -48,15 +48,15 @@
       "@decorators/*": [
         "./src/decorators/*"
       ],
-      "@v1/*": [
-        "src/routes/v1/*"
-      ],
       "@exceptions/*": [
         "./src/exceptions/*"
       ],
       "@utils/*": [
         "./src/utils/*"
-      ]
+      ],
+      "@common/*": [
+        "./src/common/*"
+      ],
     }
   },
 }

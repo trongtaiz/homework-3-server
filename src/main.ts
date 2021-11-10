@@ -21,10 +21,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
 
-  SwaggerModule.setup('api', app, document);
-
-  console.log("process.env.MYSQL_HOST: " + process.env.MYSQL_HOST);
-  console.log("process.env.PORT: "+ process.env.PORT);
+  SwaggerModule.setup('api', app, document);  
 
   await app.listen(process.env.PORT || 4300);
 }
