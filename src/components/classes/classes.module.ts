@@ -1,4 +1,4 @@
-import { Classes } from './classes.entity';
+import { Classes } from './entities/classes.entity';
 import { Module } from '@nestjs/common';
 import { ClassesController } from './classes.controller';
 import { ClassesService } from './classes.service';

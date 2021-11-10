@@ -12,10 +12,51 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "strict": true,
+    "paths": {
+      "@filters/*": [
+        "./src/filters/*"
+      ],
+      "@guards/*": [
+        "./src/guards/*"
+      ],
+      "@interfaces/*": [
+        "./src/interfaces/*"
+      ],
+      "@shared/*": [
+        "./src/components/shared/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@pipes/*": [
+        "./src/pipes/*"
+      ],
+      "@dto/*": [
+        "./src/dto/*"
+      ],
+      "@responses/*": [
+        "./src/responses/*"
+      ],
+      "@interceptors/*": [
+        "./src/interceptors/*"
+      ],
+      "@decorators/*": [
+        "./src/decorators/*"
+      ],
+      "@exceptions/*": [
+        "./src/exceptions/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@common/*": [
+        "./src/common/*"
+      ],
+    }
+  },
 }

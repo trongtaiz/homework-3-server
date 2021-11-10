@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import WrapResponseInterceptor from '@interceptors/wrap-response.interceptor';
+import { Controller, Get, Post, Body, UseInterceptors } from '@nestjs/common';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/createClass.dto';
 
+@UseInterceptors(WrapResponseInterceptor)
 @Controller('classes')
 export class ClassesController {
   constructor(private classesService: ClassesService) {}
