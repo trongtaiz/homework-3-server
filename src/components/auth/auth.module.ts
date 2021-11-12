@@ -6,12 +6,15 @@ import JwtAccessStrategy from './strategies/jwt-access.strategy';
 import JwtRefreshStrategy from './strategies/jwt-refresh.strategy';
 import AuthController from './auth.controller';
 import AuthService from './auth.service';
-import UsersModule from '@components/user/users.module';
+import UsersModule from '@components/users/users.module';
+import AuthEntity from './entities/auth.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     UsersModule,
-    PassportModule,    
+    PassportModule,
     JwtModule.register({}),
+    TypeOrmModule.forFeature([AuthEntity]),
   ],
   providers: [
     AuthService,

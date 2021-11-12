@@ -1,8 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import JWT_CONST from 'src/common/constants/jwt.constant';
+import { Request } from 'express';
 import { JwtTokenPayload } from '@components/auth/interfaces/jwt-token-payload.interface';
+import _ from 'lodash';
 
 @Injectable()
 export default class JwtRefreshStrategy extends PassportStrategy(
@@ -11,13 +12,17 @@ export default class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
       ignoreExpiration: false,
       secretOrKey: process.env.REFRESH_TOKEN_SECRET,
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: JwtTokenPayload) {
-    return payload;
+  async validate(request: Request, jwtTokenPayload: JwtTokenPayload) {
+    return {
+      jwtTokenPayload: _.omit(jwtTokenPayload, ['iat', 'exp']),
+      refreshToken: request.body['refreshToken'],
+    };
   }
 }
