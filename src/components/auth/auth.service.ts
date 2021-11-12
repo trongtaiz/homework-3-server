@@ -2,10 +2,9 @@ import * as bcrypt from 'bcrypt';
 import sha256 from 'crypto-js/sha256';
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
-  Logger,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import UsersService from '@components/users/users.service';
@@ -87,27 +86,19 @@ export default class AuthService {
     jwtTokenPayload: JwtTokenPayload,
     refreshToken: string,
   ) {
-    // const jwtTokenPayload: JwtTokenPayload = await this.jwtService
-    //   .verifyAsync(refreshToken, {
-    //     secret: process.env.REFRESH_TOKEN_SECRET,
-    //   })
-    //   .catch((_) => {
-    //     throw new UnauthorizedException('Invalid or expired refresh token');
-    //   });
-
-    Logger.debug('jwtTokenPayload: ' + JSON.stringify(jwtTokenPayload));
-    Logger.debug('refreshToken: ' + refreshToken);
+    // Logger.debug('jwtTokenPayload: ' + JSON.stringify(jwtTokenPayload));
+    // Logger.debug('refreshToken: ' + refreshToken);
 
     const hashedRefreshToken = sha256(refreshToken).toString();
 
-    Logger.debug(`hashedRefreshToken: ${hashedRefreshToken}`);
+    // Logger.debug(`hashedRefreshToken: ${hashedRefreshToken}`);
 
     const foundAuth = await this.authRepository.findOne({
       userId: jwtTokenPayload.id,
       hashedRefreshToken,
     });
 
-    if (!foundAuth) throw new ForbiddenException();
+    if (!foundAuth) throw new UnauthorizedException();
 
     const accessToken = this.jwtService.sign(jwtTokenPayload, {
       expiresIn: JWT_CONST.ACCESS_TOKEN_EXPIRED,
@@ -115,5 +106,18 @@ export default class AuthService {
     });
 
     return accessToken;
+  }
+
+  public async signOut(jwtTokenPayload: JwtTokenPayload, refreshToken: string) {
+    const hashedRefreshToken = sha256(refreshToken).toString();
+
+    const deleteResult = await this.authRepository.delete({
+      userId: jwtTokenPayload.id,
+      hashedRefreshToken,
+    });
+
+    if (deleteResult.affected === 0) throw new UnauthorizedException();
+
+    return { message: 'successfully signed out' };
   }
 }

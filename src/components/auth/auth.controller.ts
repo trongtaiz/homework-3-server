@@ -20,13 +20,13 @@ import { JwtTokenPayload } from './interfaces/jwt-token-payload.interface';
 import JwtRefreshGuard from '@guards/jwt-refresh.guard';
 
 @ApiTags('Auth')
-@UseInterceptors(WrapResponseInterceptor)
 @Controller('auth')
 export default class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiBody({ type: SignInDto })
   @ApiBearerAuth()
+  @UseInterceptors(WrapResponseInterceptor)
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Post('sign-in')
@@ -38,13 +38,14 @@ export default class AuthController {
 
   @ApiBody({ type: SignUpDto })
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(WrapResponseInterceptor)
   @Post('sign-up')
   async signUp(@Body() dto: SignUpDto) {
     return this.authService.signUp(dto);
   }
 
-  @ApiBearerAuth()
   @UseGuards(JwtRefreshGuard)
+  @UseInterceptors(WrapResponseInterceptor)
   @Post('refresh-token')
   async refreshToken(@Request() req: ExpressRequest) {
     const { jwtTokenPayload, refreshToken } = req.user as {
@@ -53,5 +54,16 @@ export default class AuthController {
     };
 
     return this.authService.refreshToken(jwtTokenPayload, refreshToken);
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('sign-out')
+  async signOut(@Request() req: ExpressRequest) {
+    const { jwtTokenPayload, refreshToken } = req.user as {
+      jwtTokenPayload: JwtTokenPayload;
+      refreshToken: string;
+    };
+
+    return this.authService.signOut(jwtTokenPayload, refreshToken);
   }
 }
