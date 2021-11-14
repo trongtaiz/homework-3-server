@@ -11,13 +11,21 @@ export default class UserEntity extends AbstractEntity {
   id!: string;
 
   @ApiProperty({ type: String, maxLength: 64 })
-  @Column({ length: 64 })
+  @Column({ length: 64, nullable: true })
   @Index({ unique: true })
-  username!: string;
+  username?: string;
 
   @ApiProperty({ type: String, maxLength: 64 })
-  @Column({ length: 64 })
-  password!: string;
+  @Column({ length: 64, nullable: true })
+  password?: string;
+
+  @Column({ length: 64, nullable: true })
+  @Index({ unique: true })
+  fbId?: string;
+
+  @Column({ length: 64, nullable: true })
+  @Index({ unique: true })
+  ggId?: string;
 
   // @ApiProperty({ type: String, default: RolesEnum.STUDENT, enum: RolesEnum })
   // @Column({ type: 'enum', enum: RolesEnum, default: RolesEnum.STUDENT })

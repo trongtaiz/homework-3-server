@@ -11,7 +11,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new AllExceptionsFilter());
-  // app.use(morgan('combined'));
+  app.use(morgan('combined'));
 
   const options = new DocumentBuilder()
     .setTitle('Api v1')
@@ -21,7 +21,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
 
-  SwaggerModule.setup('api', app, document);  
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT || 4300);
 }
