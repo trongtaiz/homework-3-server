@@ -1,0 +1,42 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: app
+    volumes:
+      - ./:/var/www/app:cached
+      - /var/www/app/node_modules # anonymous volume for node_modules only
+    restart: always
+    ports:
+      - 4300:4300
+    links:
+      - mysql
+
+  mysql:
+    container_name: mysql
+    image: mysql:5.7
+    restart: always
+    ports:
+      - '3306:3306'
+    volumes:
+      - midterm_mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=team_mysql
+      - MYSQL_DATABASE=midterm
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: team_mysql
+    links:
+      - mysql
+
+volumes:
+  midterm_mysql:

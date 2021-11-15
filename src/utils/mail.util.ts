@@ -2,7 +2,6 @@ import * as nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import * as path from 'path';
 import hbs from 'nodemailer-express-handlebars';
-import 'dotenv/config';
 
 export class MailUtil {
   private readonly transporter: Mail;
