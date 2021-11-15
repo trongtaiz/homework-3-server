@@ -9,6 +9,8 @@ import AuthService from './auth.service';
 import UsersModule from '@components/users/users.module';
 import AuthEntity from './entities/auth.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import FacebookTokenStrategy from './strategies/facebook-token.stategy';
+import GoogleTokenStrategy from './strategies/google-token.strategy';
 @Module({
   imports: [
     UsersModule,
@@ -21,6 +23,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     LocalStrategy,
     JwtAccessStrategy,
     JwtRefreshStrategy,
+    FacebookTokenStrategy,
+    GoogleTokenStrategy,
   ],
   controllers: [AuthController],
   exports: [AuthService],
