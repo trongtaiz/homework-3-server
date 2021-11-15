@@ -3,6 +3,7 @@ import sha256 from 'crypto-js/sha256';
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import SignUpDto from './dto/sign-up.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import AuthEntity from './entities/auth.entity';
 import { Repository } from 'typeorm';
+import UserEntity from '@components/users/entities/users.entity';
 
 @Injectable()
 export default class AuthService {
@@ -31,12 +33,10 @@ export default class AuthService {
       throw new NotFoundException();
     }
 
-    const passwordCompared = await bcrypt.compare(password, user.password);
+    const passwordCompared = await bcrypt.compare(password, user.password!);
 
     if (passwordCompared) {
-      return {
-        id: user.id,
-      };
+      return user;
     }
 
     return null;
@@ -48,7 +48,12 @@ export default class AuthService {
     }
 
     const newUser = await this.usersService.create(dto);
-    return this.login({ id: newUser.id });
+    return this.login(newUser);
+  }
+
+  async socialLogin(type: string, userInfo: { id: string }) {
+    const user = await this.usersService.getOrCreateOauthUser(type, userInfo);
+    return user;
   }
 
   async isExistedUsername(username: string) {
@@ -59,7 +64,11 @@ export default class AuthService {
     return duplicatedUser ? true : false;
   }
 
-  async login(jwtTokenPayload: JwtTokenPayload) {
+  async login(user: UserEntity) {
+    const jwtTokenPayload: JwtTokenPayload = {
+      id: user.id,
+    };
+
     const accessToken = this.jwtService.sign(jwtTokenPayload, {
       expiresIn: JWT_CONST.ACCESS_TOKEN_EXPIRED,
       secret: process.env.ACCESS_TOKEN_SECRET,
@@ -71,14 +80,17 @@ export default class AuthService {
 
     const hashedRefreshToken = sha256(refreshToken).toString();
 
-    await this.authRepository.save({
-      userId: jwtTokenPayload.id,
-      hashedRefreshToken,
-    });
+    await this.authRepository.save(
+      this.authRepository.create({
+        userId: jwtTokenPayload.id,
+        hashedRefreshToken,
+      }),
+    );
 
     return {
       accessToken,
       refreshToken,
+      user: { username: user.username },
     };
   }
 

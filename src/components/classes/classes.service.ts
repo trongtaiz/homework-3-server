@@ -119,4 +119,22 @@ export class ClassesService {
   async getClassDetail(id: string) {
     return this.classesRepository.findOne(id);
   }
+
+  public async isTeacherOfClass(teacherId: string, classId: string) {
+    const foundItems: any[] = await this.classesRepository.query(`
+      SELECT * FROM [TeacherClass] WHERE user_id = '${teacherId}' AND class_id = '${classId}'
+    `);
+
+    if (foundItems.length > 0) return true;
+    return false;
+  }
+
+  public async isStudentOfClass(studentId: string, classId: string) {
+    const foundItems: any[] = await this.classesRepository.query(`
+      SELECT * FROM [StudentClass] WHERE user_id = '${studentId}' AND class_id = '${classId}'
+    `);
+
+    if (foundItems.length > 0) return true;
+    return false;
+  }
 }
