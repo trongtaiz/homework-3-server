@@ -46,4 +46,10 @@ export class ClassesController {
     // get user id from jwt
     return this.classesService.sendEmailInviteTeacher(2, sendInvitationDto);
   }
+
+  @Get('/:id')
+  getClassDetail(@Param() params) {
+    console.log(params.id);
+    return this.classesService.getClassDetail(params.id);
+  }
 }

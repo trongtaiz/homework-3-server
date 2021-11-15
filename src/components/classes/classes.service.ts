@@ -116,4 +116,7 @@ export class ClassesService {
       return;
     }
   }
+  async getClassDetail(id: string) {
+    return this.classesRepository.findOne(id);
+  }
 }
