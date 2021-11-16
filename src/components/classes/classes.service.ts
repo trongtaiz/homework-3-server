@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Classes } from './entities/classes.entity';
 import { StudentClass } from './entities/studentClass.entity';
 import { TeacherClass } from './entities/teacherClass.entity';
+import UserEntity from '@components/users/entities/users.entity';
 import { Repository } from 'typeorm';
 import { CreateClassDto } from './dto/createClass.dto';
 import { RolesEnum } from '@decorators/roles.decorator';
@@ -18,6 +19,8 @@ export class ClassesService {
     private studentClassRepository: Repository<StudentClass>,
     @InjectRepository(TeacherClass)
     private teacherClassRepository: Repository<TeacherClass>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
     private readonly mailUtil: MailUtil,
   ) {}
@@ -68,54 +71,57 @@ export class ClassesService {
     });
   }
 
-  async assignTeacher(token: string, teacherId: number) {
-    const { classId } = await this.jwtService.verify(token, {
+  async joinByEmail(token: string) {
+    const { classId, email, role } = await this.jwtService.verify(token, {
       secret: process.env.TEACHER_JOIN_CLASS_SECRET,
     });
-    const isTeacherInClass = await this.teacherClassRepository.findOne({
-      class_id: classId,
-      user_id: teacherId,
-    });
-
-    if (isTeacherInClass) {
+    const isAccountExist = await this.userRepository.findOne({ email });
+    if (!isAccountExist) {
       return;
     }
-
-    return this.teacherClassRepository.save({
-      class_id: classId,
-      user_id: teacherId,
-    });
+    switch (role) {
+      case RolesEnum.TEACHER: {
+        const isTeacherInClass = await this.teacherClassRepository.findOne({
+          class_id: classId,
+          user_id: isAccountExist.id,
+        });
+        if (isTeacherInClass) {
+          return;
+        }
+        return this.teacherClassRepository.save({
+          class_id: classId,
+          user_id: isAccountExist.id,
+        });
+      }
+      case RolesEnum.STUDENT: {
+        const isStudentInClass = await this.studentClassRepository.findOne({
+          class_id: classId,
+          user_id: isAccountExist.id,
+        });
+        if (isStudentInClass) {
+          return;
+        }
+        return this.studentClassRepository.save({
+          class_id: classId,
+          user_id: isAccountExist.id,
+        });
+      }
+    }
   }
 
-  async sendEmailInviteTeacher(userId, { userEmail, role, classId }) {
-    const isClassExiest = await this.classesRepository.findOne(
-      { id: classId },
-      { select: ['create_by'] },
+  async sendEmailInviteToClass({ userEmail, role, classId }) {
+    const token = this.jwtService.sign(
+      { classId, email: userEmail, role },
+      {
+        expiresIn: JWT_CONST.ACCESS_TOKEN_EXPIRED,
+        secret: process.env.TEACHER_JOIN_CLASS_SECRET,
+      },
     );
-    if (!isClassExiest || isClassExiest.create_by !== userId) {
-      return;
-    }
-    if (role === RolesEnum.STUDENT) {
-      const inviteIdOfClass = await this.getInviteId(classId);
-      console.log(inviteIdOfClass, classId);
-      const urlToSend = `join-class/?classId=${classId}&inviteId=${inviteIdOfClass?.invite_id}`;
-      this.mailUtil.sendInvitationMail(urlToSend, userEmail);
-      return;
-    }
-
-    if (role === RolesEnum.TEACHER) {
-      const token = this.jwtService.sign(
-        { classId },
-        {
-          expiresIn: JWT_CONST.ACCESS_TOKEN_EXPIRED,
-          secret: process.env.TEACHER_JOIN_CLASS_SECRET,
-        },
-      );
-      const urlToSend = `teacher-join/${token}`;
-      this.mailUtil.sendInvitationMail(urlToSend, userEmail);
-      return;
-    }
+    const urlToSend = `join-by-email/${token}`;
+    this.mailUtil.sendInvitationMail(urlToSend, userEmail);
+    return;
   }
+
   async getClassDetail(id: string) {
     return this.classesRepository.findOne(id);
   }

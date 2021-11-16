@@ -8,7 +8,7 @@ export class StudentClass {
   class_id!: number;
 
   @PrimaryColumn()
-  user_id!: number;
+  user_id!: string;
 
   @ManyToOne((type) => User, (users) => users.id)
   @JoinColumn({ name: 'user_id' })

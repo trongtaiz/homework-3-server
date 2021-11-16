@@ -1,6 +1,7 @@
 import { Classes } from './entities/classes.entity';
 import { StudentClass } from './entities/studentClass.entity';
 import { TeacherClass } from './entities/teacherClass.entity';
+import UserEntity from '@components/users/entities/users.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { ClassesController } from './classes.controller';
@@ -11,8 +12,8 @@ import { MailModule } from '@utils/mail.util';
 @Module({
   imports: [
     JwtModule.register({}),
-    TypeOrmModule.forFeature([Classes, StudentClass, TeacherClass]),
-    MailModule
+    TypeOrmModule.forFeature([Classes, StudentClass, TeacherClass, UserEntity]),
+    MailModule,
   ],
   controllers: [ClassesController],
   providers: [ClassesService],

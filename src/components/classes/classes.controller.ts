@@ -1,5 +1,6 @@
 import AuthUser from '@decorators/auth-user.decorator';
 import JwtAccessGuard from '@guards/jwt-access.guard';
+import TeacherOfClassGuard from '@guards/teacher-of-class.guard';
 import WrapResponseInterceptor from '@interceptors/wrap-response.interceptor';
 import {
   Controller,
@@ -44,24 +45,19 @@ export class ClassesController {
     });
   }
 
-  @UseGuards(JwtAccessGuard)
-  @Get('/teacher-join/:token')
-  assignTeacher(@AuthUser() user: any, @Param('token') token: string) {
+  @Get('/join-by-email/:token')
+  assignTeacher(@Param('token') token: string) {
     // need to get teacher id from jwt
-    return this.classesService.assignTeacher(token, user.id);
+    return this.classesService.joinByEmail(token);
   }
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtAccessGuard, TeacherOfClassGuard)
   @Get('/send-email')
   sendInvitationEmail(
     @AuthUser() user: any,
     @Body() sendInvitationDto: SendInvitationDto,
   ) {
-    // get user id from jwt
-    return this.classesService.sendEmailInviteTeacher(
-      user.id,
-      sendInvitationDto,
-    );
+    return this.classesService.sendEmailInviteToClass(sendInvitationDto);
   }
 
   @UseGuards(JwtAccessGuard)

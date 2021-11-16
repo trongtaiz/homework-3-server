@@ -26,8 +26,8 @@ export default class AuthService {
     private readonly authRepository: Repository<AuthEntity>,
   ) {}
 
-  async validateUser(username: string, password: string) {
-    const user = await this.usersService.getUser({ username });
+  async validateUser(email: string, password: string) {
+    const user = await this.usersService.getUser({ email });
 
     if (!user) {
       throw new NotFoundException();
@@ -43,7 +43,7 @@ export default class AuthService {
   }
 
   async signUp(dto: SignUpDto) {
-    if (await this.isExistedUsername(dto.username)) {
+    if (await this.isExistedUsername(dto.email)) {
       throw new ConflictException();
     }
 
@@ -56,9 +56,9 @@ export default class AuthService {
     return user;
   }
 
-  async isExistedUsername(username: string) {
+  async isExistedUsername(email: string) {
     const duplicatedUser = await this.usersService.getUser({
-      username,
+      email,
     });
 
     return duplicatedUser ? true : false;
@@ -90,7 +90,7 @@ export default class AuthService {
     return {
       accessToken,
       refreshToken,
-      user: { username: user.username },
+      user: { email: user.email },
     };
   }
 
