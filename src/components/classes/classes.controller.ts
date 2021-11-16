@@ -63,4 +63,22 @@ export class ClassesController {
       sendInvitationDto,
     );
   }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/:id')
+  getClassDetail(@Param() params) {
+    return this.classesService.getClassDetail(params.id);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/students/:classId')
+  getStudentsInClass(@Param() params) {
+    return this.classesService.getStudentsInClass(params.classId);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/teachers/:classId')
+  getTeachersInClass(@Param() params) {
+    return this.classesService.getTeachersInClass(params.classId);
+  }
 }

@@ -116,6 +116,9 @@ export class ClassesService {
       return;
     }
   }
+  async getClassDetail(id: string) {
+    return this.classesRepository.findOne(id);
+  }
 
   public async isTeacherOfClass(teacherId: string, classId: string) {
     const foundItems: any[] = await this.classesRepository.query(`
@@ -133,5 +136,19 @@ export class ClassesService {
 
     if (foundItems.length > 0) return true;
     return false;
+  }
+
+  async getStudentsInClass(id: string) {
+    return this.studentClassRepository.find({
+      relations: ['user'],
+      where: { class_id: id },
+    });
+  }
+
+  async getTeachersInClass(id: string) {
+    return this.teacherClassRepository.find({
+      relations: ['user'],
+      where: { class_id: id },
+    });
   }
 }

@@ -5,6 +5,8 @@ import { ClassesModule } from '@components/classes/classes.module';
 import AuthModule from '@components/auth/auth.module';
 import UsersModule from '@components/users/users.module';
 import {MailModule} from '@utils/mail.util';
+import { PostsModule } from '@components/posts/posts.module';
+
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import {MailModule} from '@utils/mail.util';
     UsersModule,
     AuthModule,
     MailModule,
+    PostsModule,
   ],
 })
 export class AppModule {}

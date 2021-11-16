@@ -19,6 +19,10 @@ export default class UserEntity extends AbstractEntity {
   @Column({ length: 64, nullable: true })
   password?: string;
 
+  @ApiProperty({ type: String, maxLength: 64 })
+  @Column({ length: 64, nullable: true })
+  name?: string;
+
   @Column({ length: 64, nullable: true })
   @Index({ unique: true })
   fbId?: string;
