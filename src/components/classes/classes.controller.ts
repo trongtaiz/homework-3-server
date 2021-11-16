@@ -65,12 +65,6 @@ export class ClassesController {
   }
 
   @UseGuards(JwtAccessGuard)
-  @Get('/:id')
-  getClassDetail(@Param() params) {
-    return this.classesService.getClassDetail(params.id);
-  }
-
-  @UseGuards(JwtAccessGuard)
   @Get('/students/:classId')
   getStudentsInClass(@Param() params) {
     return this.classesService.getStudentsInClass(params.classId);
@@ -96,4 +90,10 @@ export class ClassesController {
     console.log('query', classId, userId);
     return this.classesService.fetchStudentId(classId, userId);
   }
+  @UseGuards(JwtAccessGuard)
+  @Get('/:id')
+  getClassDetail(@Param() params) {
+    return this.classesService.getClassDetail(params.id);
+  }
+
 }

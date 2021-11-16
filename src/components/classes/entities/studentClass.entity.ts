@@ -10,7 +10,7 @@ export class StudentClass {
   @PrimaryColumn()
   user_id!: number;
 
-  @Column()
+  @Column({ nullable: true })
   student_id?: string;
 
   @ManyToOne((type) => User, (users) => users.id)
