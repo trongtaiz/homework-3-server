@@ -61,12 +61,6 @@ export class ClassesController {
   }
 
   @UseGuards(JwtAccessGuard)
-  @Get('/:id')
-  getClassDetail(@Param() params) {
-    return this.classesService.getClassDetail(params.id);
-  }
-
-  @UseGuards(JwtAccessGuard)
   @Get('/students/:classId')
   getStudentsInClass(@Param() params) {
     return this.classesService.getStudentsInClass(params.classId);
@@ -77,4 +71,25 @@ export class ClassesController {
   getTeachersInClass(@Param() params) {
     return this.classesService.getTeachersInClass(params.classId);
   }
+
+  @Get('/changeStudentId/')
+  changeStudentId(
+    @Query('classId') classId,
+    @Query('userId') userId,
+    @Query('studentId') studentId,
+  ) {
+    console.log('query', classId, userId, studentId);
+    return this.classesService.changeStudentId(classId, userId, studentId);
+  }
+  @Get('/fetchStudentId/')
+  fetchStudentId(@Query('classId') classId, @Query('userId') userId) {
+    console.log('query', classId, userId);
+    return this.classesService.fetchStudentId(classId, userId);
+  }
+  @UseGuards(JwtAccessGuard)
+  @Get('/:id')
+  getClassDetail(@Param() params) {
+    return this.classesService.getClassDetail(params.id);
+  }
+
 }

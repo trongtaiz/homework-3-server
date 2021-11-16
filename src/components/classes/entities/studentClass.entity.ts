@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn, ManyToOne, JoinColumn, Column } from "typeorm";
 import { Classes } from './classes.entity';
 import User from '@components/users/entities/users.entity';
 
@@ -9,6 +9,9 @@ export class StudentClass {
 
   @PrimaryColumn()
   user_id!: string;
+
+  @Column({ nullable: true })
+  student_id?: string;
 
   @ManyToOne((type) => User, (users) => users.id)
   @JoinColumn({ name: 'user_id' })

@@ -157,4 +157,28 @@ export class ClassesService {
       where: { class_id: id },
     });
   }
+
+  public async changeStudentId(classId, userId, studentId) {
+    const data = await this.studentClassRepository.findOne({
+      where: { class_id: classId, student_id: studentId },
+    });
+    if (data) return null;
+    const res = await this.studentClassRepository.update(
+      {
+        class_id: classId,
+        user_id: userId,
+      },
+      {
+        student_id: studentId,
+      },
+    );
+    if (res.affected == 1) return studentId;
+  }
+  public async fetchStudentId(classId, userId) {
+    const data = await this.studentClassRepository.findOne({
+      where: { class_id: classId, user_id: userId },
+    });
+    if (data) return data.student_id;
+    return null;
+  }
 }
