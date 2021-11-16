@@ -64,18 +64,21 @@ export class ClassesController {
     );
   }
 
+  @UseGuards(JwtAccessGuard)
   @Get('/:id')
   getClassDetail(@Param() params) {
     return this.classesService.getClassDetail(params.id);
   }
 
-  @Get('/students/:class_id')
+  @UseGuards(JwtAccessGuard)
+  @Get('/students/:classId')
   getStudentsInClass(@Param() params) {
-    return this.classesService.getStudentsInClass(params.class_id);
+    return this.classesService.getStudentsInClass(params.classId);
   }
 
-  @Get('/teachers/:class_id')
+  @UseGuards(JwtAccessGuard)
+  @Get('/teachers/:classId')
   getTeachersInClass(@Param() params) {
-    return this.classesService.getTeachersInClass(params.class_id);
+    return this.classesService.getTeachersInClass(params.classId);
   }
 }
