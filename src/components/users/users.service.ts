@@ -1,11 +1,17 @@
 import * as bcrypt from 'bcrypt';
 
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import SignUpDto from '@components/auth/dto/sign-up.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import UserEntity from './entities/users.entity';
 import _ from 'lodash';
+import UpdateUserDto from './dto/update-user.dto';
 
 @Injectable()
 export default class UsersService {
@@ -63,7 +69,14 @@ export default class UsersService {
 
   public async getUserInfo(userId: string) {
     const foundUser = await this.getUser({ id: userId });
+    return _.pick(foundUser, ['email', 'name']);
+  }
 
-    return _.omit(foundUser, ['password', 'id']);
+  public async updateUser(userId: string, dto: UpdateUserDto) {
+    Logger.debug(userId);
+    Logger.debug(JSON.stringify(dto));
+    const updateResult = await this.usersRepository.update(userId, dto);
+    if (updateResult.affected === 0) throw new BadRequestException();
+    return true;
   }
 }

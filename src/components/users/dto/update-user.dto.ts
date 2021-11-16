@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
-export default class UpdateProfileDto {
+export default class UpdateUserDto {
   @ApiProperty({ type: String })
   @IsNotEmpty()
   @IsString()
