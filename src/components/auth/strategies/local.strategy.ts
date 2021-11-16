@@ -15,7 +15,7 @@ import AuthService from '../auth.service';
 export default class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
-      usernameField: 'username',
+      usernameField: 'email',
       passwordField: 'password',
       passReqToCallback: true,
     });
@@ -23,7 +23,7 @@ export default class LocalStrategy extends PassportStrategy(Strategy) {
 
   async validate(
     req: ExpressRequest,
-    username: string,
+    email: string,
     password: string,
   ): Promise<JwtTokenPayload> {
     const errors = await validate(new SignInDto(req.body));
@@ -32,7 +32,7 @@ export default class LocalStrategy extends PassportStrategy(Strategy) {
       throw new BadRequestException(errors);
     }
 
-    const user = await this.authService.validateUser(username, password);
+    const user = await this.authService.validateUser(email, password);
 
     if (!user) {
       throw new UnauthorizedException();
