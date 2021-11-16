@@ -43,7 +43,7 @@ export default class AuthService {
   }
 
   async signUp(dto: SignUpDto) {
-    if (await this.isExistedUsername(dto.email)) {
+    if (await this.isExistedEmail(dto.email)) {
       throw new ConflictException();
     }
 
@@ -56,7 +56,7 @@ export default class AuthService {
     return user;
   }
 
-  async isExistedUsername(email: string) {
+  async isExistedEmail(email: string) {
     const duplicatedUser = await this.usersService.getUser({
       email,
     });
