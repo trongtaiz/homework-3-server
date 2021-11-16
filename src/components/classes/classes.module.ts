@@ -4,7 +4,7 @@ import { TeacherClass } from './entities/teacherClass.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { ClassesController } from './classes.controller';
-import { ClassesService } from './classes.service';
+import { ClassesService } from '@components/classes/classes.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

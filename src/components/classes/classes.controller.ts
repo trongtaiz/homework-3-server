@@ -63,4 +63,19 @@ export class ClassesController {
       sendInvitationDto,
     );
   }
+
+  @Get('/:id')
+  getClassDetail(@Param() params) {
+    return this.classesService.getClassDetail(params.id);
+  }
+
+  @Get('/students/:class_id')
+  getStudentsInClass(@Param() params) {
+    return this.classesService.getStudentsInClass(params.class_id);
+  }
+
+  @Get('/teachers/:class_id')
+  getTeachersInClass(@Param() params) {
+    return this.classesService.getTeachersInClass(params.class_id);
+  }
 }
