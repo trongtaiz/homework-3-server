@@ -116,9 +116,6 @@ export class ClassesService {
       return;
     }
   }
-  async getClassDetail(id: string) {
-    return this.classesRepository.findOne(id);
-  }
 
   public async isTeacherOfClass(teacherId: string, classId: string) {
     const foundItems: any[] = await this.classesRepository.query(`
@@ -138,41 +135,20 @@ export class ClassesService {
     return false;
   }
 
-  async getStudentsInClass(id: string) {
-    return this.studentClassRepository.find({
-      relations: ['user'],
-      where: { class_id: id },
-    });
-  }
-
-  async getTeachersInClass(id: string) {
-    return this.teacherClassRepository.find({
-      relations: ['user'],
-      where: { class_id: id },
-    });
-  }
-
-  public async changeStudentId(classId, userId, studentId) {
+  public async mapStudentId(classId, userId, studentId) {
     const data = await this.studentClassRepository.findOne({
       where: { class_id: classId, student_id: studentId },
     });
+    console.log('data', data);
     if (data) return null;
-    const res = await this.studentClassRepository.update(
+    return this.studentClassRepository.update(
       {
-        class_id: classId,
-        user_id: userId,
+        class_id: parseInt(classId),
+        user_id: parseInt(userId),
       },
       {
         student_id: studentId,
       },
     );
-    if (res.affected == 1) return studentId;
-  }
-  public async fetchStudentId(classId, userId) {
-    const data = await this.studentClassRepository.findOne({
-      where: { class_id: classId, user_id: userId },
-    });
-    if (data) return data.student_id;
-    return null;
   }
 }
