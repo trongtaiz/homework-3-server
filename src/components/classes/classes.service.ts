@@ -6,11 +6,10 @@ import { StudentClass } from './entities/studentClass.entity';
 import { TeacherClass } from './entities/teacherClass.entity';
 import { Repository } from 'typeorm';
 import { CreateClassDto } from './dto/createClass.dto';
-import { MailUtil } from '@utils/mail.util';
 import { RolesEnum } from '@decorators/roles.decorator';
 import JWT_CONST from '@common/constants/jwt.constant';
+import { MailUtil } from '@utils/mail.util';
 
-const mailUtil = new MailUtil();
 @Injectable()
 export class ClassesService {
   constructor(
@@ -20,6 +19,7 @@ export class ClassesService {
     @InjectRepository(TeacherClass)
     private teacherClassRepository: Repository<TeacherClass>,
     private readonly jwtService: JwtService,
+    private readonly mailUtil: MailUtil,
   ) {}
 
   async createClass(userId, createClassInput: CreateClassDto) {
@@ -99,7 +99,7 @@ export class ClassesService {
       const inviteIdOfClass = await this.getInviteId(classId);
       console.log(inviteIdOfClass, classId);
       const urlToSend = `join-class/?classId=${classId}&inviteId=${inviteIdOfClass?.invite_id}`;
-      mailUtil.sendInvitationMail(urlToSend, userEmail);
+      this.mailUtil.sendInvitationMail(urlToSend, userEmail);
       return;
     }
 
@@ -112,7 +112,7 @@ export class ClassesService {
         },
       );
       const urlToSend = `teacher-join/${token}`;
-      mailUtil.sendInvitationMail(urlToSend, userEmail);
+      this.mailUtil.sendInvitationMail(urlToSend, userEmail);
       return;
     }
   }

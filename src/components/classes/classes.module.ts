@@ -6,11 +6,13 @@ import { Module } from '@nestjs/common';
 import { ClassesController } from './classes.controller';
 import { ClassesService } from './classes.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailModule } from '@utils/mail.util';
 
 @Module({
   imports: [
     JwtModule.register({}),
     TypeOrmModule.forFeature([Classes, StudentClass, TeacherClass]),
+    MailModule
   ],
   controllers: [ClassesController],
   providers: [ClassesService],
