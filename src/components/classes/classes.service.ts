@@ -116,6 +116,9 @@ export class ClassesService {
       return;
     }
   }
+  async getClassDetail(id: string) {
+    return this.classesRepository.findOne(id);
+  }
 
   public async isTeacherOfClass(teacherId: string, classId: string) {
     const foundItems: any[] = await this.classesRepository.query(`

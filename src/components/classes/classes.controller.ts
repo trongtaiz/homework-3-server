@@ -63,4 +63,10 @@ export class ClassesController {
       sendInvitationDto,
     );
   }
+
+  @Get('/:id')
+  getClassDetail(@Param() params) {
+    console.log(params.id);
+    return this.classesService.getClassDetail(params.id);
+  }
 }
