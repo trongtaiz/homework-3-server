@@ -41,14 +41,18 @@ export default class FacebookTokenStrategy extends PassportStrategy(
     //   "id": "2134262636721798"
     // }
     const {
-      // email,
-      // first_name: firstName,
-      // last_name: lastName,
+      email,
+      first_name: firstName,
+      last_name: lastName,
       id,
     } = profile._json;
     Logger.debug(`facebook _json: ${JSON.stringify(profile._json, null, 2)}`);
 
-    const user = await this.authService.socialLogin('fb', { id });
+    const user = await this.authService.socialLogin('fb', {
+      id,
+      email,
+      name: firstName + ' ' + lastName,
+    });
 
     done(null, user);
   }
