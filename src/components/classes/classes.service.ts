@@ -37,6 +37,7 @@ export class ClassesService {
       class_id: newClass.id,
       user_id: userId,
     });
+    return newClass;
   }
 
   async getAllClasses(id) {
