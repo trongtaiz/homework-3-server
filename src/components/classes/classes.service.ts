@@ -185,4 +185,17 @@ export class ClassesService {
     if (data) return data.student_id;
     return null;
   }
+
+  async getRole(classId, userId) {
+    const student = await this.studentClassRepository.findOne({
+      where: { class_id: classId, user_id: userId },
+    });
+    console.log('student', student);
+    if (student) return 'STUDENT';
+    const teacher = await this.teacherClassRepository.findOne({
+      where: { class_id: classId, user_id: userId },
+    });
+    if (teacher) return 'TEACHER';
+    return null;
+  }
 }

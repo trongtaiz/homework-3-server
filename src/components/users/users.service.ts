@@ -69,7 +69,7 @@ export default class UsersService {
 
   public async getUserInfo(userId: string) {
     const foundUser = await this.getUser({ id: userId });
-    return _.pick(foundUser, ['email', 'name']);
+    return _.pick(foundUser, ['email', 'name', 'id']);
   }
 
   public async updateUser(userId: string, dto: UpdateUserDto) {
