@@ -2,6 +2,7 @@ import AuthUser from '@decorators/auth-user.decorator';
 import JwtAccessGuard from '@guards/jwt-access.guard';
 import WrapResponseInterceptor from '@interceptors/wrap-response.interceptor';
 import {
+  Body,
   Controller,
   Get,
   Post,
@@ -9,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import UpdateUserDto from './dto/update-user.dto';
 import UsersService from './users.service';
 
 @Controller('users')
@@ -24,7 +26,8 @@ export default class UsersController {
 
   @UseGuards(JwtAccessGuard)
   @Put()
-  async editProfile(@AuthUser() user: any) {
-    return this.usersService;
+  async editProfile(@AuthUser() user: any, @Body() dto: UpdateUserDto) {
+    const result = await this.usersService.updateUser(user.id, dto);
+    if (result) return { message: 'Update successfully' };
   }
 }
