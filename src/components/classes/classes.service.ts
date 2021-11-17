@@ -39,8 +39,31 @@ export class ClassesService {
     });
   }
 
-  async getAllClasses() {
-    return this.classesRepository.find();
+  async getAllClasses(id) {
+    const teacherClassArray: any[] = await this.classesRepository.query(`
+      SELECT class_id FROM TeacherClass WHERE user_id = '${id}'`);
+
+    const studentClassArray: any[] = await this.classesRepository.query(`
+      SELECT class_id FROM StudentClass WHERE user_id = '${id}'`);
+
+    let allClassId = teacherClassArray
+      .map((eachValue) => eachValue.class_id)
+      .concat(studentClassArray.map((eachValue) => eachValue.class_id));
+
+    allClassId = allClassId.filter((item, index) => {
+      return allClassId.indexOf(item) == index;
+    });
+    if (!allClassId.length) {
+      return;
+    }
+    const result = await this.classesRepository
+      .createQueryBuilder()
+      .select(['*'])
+      .where('id IN (:...allClassId)', {
+        allClassId,
+      })
+      .execute();
+    return result;
   }
 
   async getInviteId(classId: number) {
