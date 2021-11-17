@@ -51,7 +51,10 @@ export default class AuthService {
     return this.login(newUser);
   }
 
-  async socialLogin(type: string, userInfo: { id: string, email: string, name: string }) {
+  async socialLogin(
+    type: string,
+    userInfo: { id: string; email: string; name: string },
+  ) {
     const user = await this.usersService.getOrCreateOauthUser(type, userInfo);
     return user;
   }
@@ -90,7 +93,7 @@ export default class AuthService {
     return {
       accessToken,
       refreshToken,
-      user: { email: user.email },
+      user: { email: user.email, name: user.name, id: user.id },
     };
   }
 
