@@ -1,7 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, Index } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { RolesEnum } from '@decorators/roles.decorator';
 import { AbstractEntity } from '@common/entities/abstract.entity';
 
 @Entity('Users')

@@ -27,9 +27,10 @@ export class ClassesController {
     return this.classesService.createClass(user.id, createClassDto);
   }
 
+  @UseGuards(JwtAccessGuard)
   @Get('/all')
-  getAllClasses() {
-    return this.classesService.getAllClasses();
+  getAllClasses(@AuthUser() user: any) {
+    return this.classesService.getAllClasses(user.id);
   }
 
   @UseGuards(JwtAccessGuard)
@@ -80,6 +81,12 @@ export class ClassesController {
     console.log('query', classId, userId);
     return this.classesService.fetchStudentId(classId, userId);
   }
+  @Get('/role')
+  getRole(@Query('classId') classId, @Query('userId') userId) {
+    console.log('query', classId, userId);
+    return this.classesService.getRole(classId, userId);
+  }
+
   @UseGuards(JwtAccessGuard)
   @Get('/:id')
   getClassDetail(@Param() params) {
