@@ -24,7 +24,6 @@ export class ClassesController {
   @UseGuards(JwtAccessGuard)
   @Post('/')
   createClass(@AuthUser() user: any, @Body() createClassDto: CreateClassDto) {
-    // get user id from jwt
     return this.classesService.createClass(user.id, createClassDto);
   }
 
@@ -37,7 +36,6 @@ export class ClassesController {
   @Get('/join-class') // ?inviteId=...&?classId=...
   joinClass(@AuthUser() user: any, @Query() query) {
     const { inviteId, classId } = query;
-    // need to get student id from jwt
     return this.classesService.joinClass({
       studentId: user.id,
       classId,
@@ -47,16 +45,12 @@ export class ClassesController {
 
   @Get('/join-by-email/:token')
   assignTeacher(@Param('token') token: string) {
-    // need to get teacher id from jwt
     return this.classesService.joinByEmail(token);
   }
 
   @UseGuards(JwtAccessGuard, TeacherOfClassGuard)
-  @Get('/send-email')
-  sendInvitationEmail(
-    @AuthUser() user: any,
-    @Body() sendInvitationDto: SendInvitationDto,
-  ) {
+  @Post('/send-email')
+  sendInvitationEmail(@Body() sendInvitationDto: SendInvitationDto) {
     return this.classesService.sendEmailInviteToClass(sendInvitationDto);
   }
 
@@ -91,5 +85,4 @@ export class ClassesController {
   getClassDetail(@Param() params) {
     return this.classesService.getClassDetail(params.id);
   }
-
 }

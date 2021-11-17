@@ -15,8 +15,8 @@ export default class TeacherOfClassGuard implements CanActivate {
     if (!classId) return false;
 
     const isTeacherOfClass = await this.classesService.isTeacherOfClass(
-      classId,
       request.user.id,
+      classId,
     );
 
     return isTeacherOfClass;

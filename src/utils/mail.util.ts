@@ -33,6 +33,7 @@ export class MailUtil {
   }
 
   async sendInvitationMail(link: string, userEmail): Promise<void> {
+    console.log(`${process.env.FRONTEND_URL}/${link}`);
     const email = {
       from: `"Google classroom" <${process.env.EMAIL}>`,
       to: userEmail,
@@ -43,8 +44,6 @@ export class MailUtil {
         activationLink: `${process.env.FRONTEND_URL}/${link}`,
       },
     };
-
-    // console.log(`${process.env.FRONTEND_URL}/${link}`);
 
     try {
       await this.transporter.sendMail(email);

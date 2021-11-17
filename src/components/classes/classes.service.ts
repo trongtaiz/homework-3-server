@@ -128,7 +128,9 @@ export class ClassesService {
 
   public async isTeacherOfClass(teacherId: string, classId: string) {
     const foundItems: any[] = await this.classesRepository.query(`
-      SELECT * FROM [TeacherClass] WHERE user_id = '${teacherId}' AND class_id = '${classId}'
+      SELECT * FROM TeacherClass WHERE user_id = '${teacherId}' AND class_id = ${parseInt(
+      classId,
+    )}
     `);
 
     if (foundItems.length > 0) return true;
@@ -137,7 +139,9 @@ export class ClassesService {
 
   public async isStudentOfClass(studentId: string, classId: string) {
     const foundItems: any[] = await this.classesRepository.query(`
-      SELECT * FROM [StudentClass] WHERE user_id = '${studentId}' AND class_id = '${classId}'
+      SELECT * FROM StudentClass WHERE user_id = '${studentId}' AND class_id = ${parseInt(
+      classId,
+    )}
     `);
 
     if (foundItems.length > 0) return true;

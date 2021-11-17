@@ -15,8 +15,8 @@ export default class StudentOfClassGuard implements CanActivate {
     if (!classId) return false;
 
     const isStudentOfClass = await this.classesService.isStudentOfClass(
-      classId,
       request.user.id,
+      classId,
     );
 
     return isStudentOfClass;
