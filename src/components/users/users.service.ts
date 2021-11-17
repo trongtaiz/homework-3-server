@@ -31,7 +31,10 @@ export default class UsersService {
     );
   }
 
-  public async getOrCreateOauthUser(type: string, userInfo: { id: string }) {
+  public async getOrCreateOauthUser(
+    type: string,
+    userInfo: { id: string; email: string; name: string },
+  ) {
     let dynamicConditions: { [key: string]: string } = {};
 
     switch (type) {
@@ -52,7 +55,11 @@ export default class UsersService {
     if (!foundUser) {
       // create new one
       const newUser = await this.usersRepository.save(
-        this.usersRepository.create(dynamicConditions),
+        this.usersRepository.create({
+          ...dynamicConditions,
+          email: userInfo.email,
+          name: userInfo.name,
+        }),
       );
 
       return newUser;

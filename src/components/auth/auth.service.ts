@@ -51,7 +51,7 @@ export default class AuthService {
     return this.login(newUser);
   }
 
-  async socialLogin(type: string, userInfo: { id: string }) {
+  async socialLogin(type: string, userInfo: { id: string, email: string, name: string }) {
     const user = await this.usersService.getOrCreateOauthUser(type, userInfo);
     return user;
   }
