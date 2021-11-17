@@ -51,11 +51,20 @@ export default class UsersService {
     const foundUserBySocialId = await this.usersRepository.findOne({
       ...dynamicConditions,
     });
-    
+
     if (!foundUserBySocialId) {
-      const foundUserByEmail = await this.usersRepository.findOne({email: userInfo.email});
-      
-      if (foundUserByEmail) return foundUserByEmail;
+      const foundUserByEmail = await this.usersRepository.findOne({
+        email: userInfo.email,
+      });
+
+      if (foundUserByEmail) {
+        // update socialId
+        await this.usersRepository.update(foundUserByEmail.id, {
+          ...dynamicConditions,
+        });
+
+        return foundUserByEmail;
+      }
 
       // create new one
       const newUser = await this.usersRepository.save(
