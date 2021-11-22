@@ -48,11 +48,24 @@ export default class UsersService {
         throw new InternalServerErrorException();
     }
 
-    const foundUser = await this.usersRepository.findOne({
+    const foundUserBySocialId = await this.usersRepository.findOne({
       ...dynamicConditions,
     });
 
-    if (!foundUser) {
+    if (!foundUserBySocialId) {
+      const foundUserByEmail = await this.usersRepository.findOne({
+        email: userInfo.email,
+      });
+
+      if (foundUserByEmail) {
+        // update socialId
+        await this.usersRepository.update(foundUserByEmail.id, {
+          ...dynamicConditions,
+        });
+
+        return foundUserByEmail;
+      }
+
       // create new one
       const newUser = await this.usersRepository.save(
         this.usersRepository.create({
@@ -65,7 +78,7 @@ export default class UsersService {
       return newUser;
     }
 
-    return foundUser;
+    return foundUserBySocialId;
   }
 
   public async getUser(condition: Partial<UserEntity>) {
