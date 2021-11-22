@@ -31,7 +31,10 @@ export default class UsersService {
     );
   }
 
-  public async getOrCreateOauthUser(type: string, userInfo: { id: string }) {
+  public async getOrCreateOauthUser(
+    type: string,
+    userInfo: { id: string; email: string; name: string },
+  ) {
     let dynamicConditions: { [key: string]: string } = {};
 
     switch (type) {
@@ -45,20 +48,37 @@ export default class UsersService {
         throw new InternalServerErrorException();
     }
 
-    const foundUser = await this.usersRepository.findOne({
+    const foundUserBySocialId = await this.usersRepository.findOne({
       ...dynamicConditions,
     });
 
-    if (!foundUser) {
+    if (!foundUserBySocialId) {
+      const foundUserByEmail = await this.usersRepository.findOne({
+        email: userInfo.email,
+      });
+
+      if (foundUserByEmail) {
+        // update socialId
+        await this.usersRepository.update(foundUserByEmail.id, {
+          ...dynamicConditions,
+        });
+
+        return foundUserByEmail;
+      }
+
       // create new one
       const newUser = await this.usersRepository.save(
-        this.usersRepository.create(dynamicConditions),
+        this.usersRepository.create({
+          ...dynamicConditions,
+          email: userInfo.email,
+          name: userInfo.name,
+        }),
       );
 
       return newUser;
     }
 
-    return foundUser;
+    return foundUserBySocialId;
   }
 
   public async getUser(condition: Partial<UserEntity>) {

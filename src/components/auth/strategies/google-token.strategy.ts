@@ -40,9 +40,15 @@ export default class GoogleTokenStrategy extends PassportStrategy(
     //   "jti": "ecc6d29c100bab9dd911b01decdbe02c61bece46"
     // }
 
+    const { name, email } = parsedToken;
+
     Logger.debug(`parsedToken: ${JSON.stringify(parsedToken, null, 2)}`);
 
-    const user = await this.authService.socialLogin('gg', { id: googleId });
+    const user = await this.authService.socialLogin('gg', {
+      id: googleId,
+      name,
+      email,
+    });
 
     done(null, user);
   }
