@@ -5,8 +5,10 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import User from '@components/users/entities/users.entity';
+import AssignmentEntity from '@components/assignments/entities/assignments.entity';
 
 @Entity('Classes')
 export class Classes {
@@ -31,6 +33,11 @@ export class Classes {
   @ManyToOne((type) => User, (users) => users.id)
   @JoinColumn({ name: 'create_by' })
   public user!: User;
+
+  @OneToMany(() => AssignmentEntity, (assignment) => assignment.class, {
+    createForeignKeyConstraints: false,
+  })
+  assignments?: AssignmentEntity[];
 
   @Column()
   @Generated('uuid')

@@ -4,9 +4,14 @@ import { ConfigModule } from '@nestjs/config';
 import { ClassesModule } from '@components/classes/classes.module';
 import AuthModule from '@components/auth/auth.module';
 import UsersModule from '@components/users/users.module';
-import {MailModule} from '@utils/mail.util';
+import { MailModule } from '@utils/mail.util';
 import { PostsModule } from '@components/posts/posts.module';
-
+import JwtAccessGuard from '@guards/jwt-access.guard';
+import JwtRefreshGuard from '@guards/jwt-refresh.guard';
+import ParticipateInClassGuard from '@components/classes/guards/participate-in-class.guard';
+import StudentOfClassGuard from '@components/classes/guards/student-of-class.guard';
+import TeacherOfClassGuard from '@components/classes/guards/teacher-of-class.guard';
+import AssignmentsModule from '@components/assignments/asignments.module';
 
 @Module({
   imports: [
@@ -32,6 +37,7 @@ import { PostsModule } from '@components/posts/posts.module';
     AuthModule,
     MailModule,
     PostsModule,
+    AssignmentsModule,
   ],
 })
 export class AppModule {}

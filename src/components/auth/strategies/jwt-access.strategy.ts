@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtTokenPayload } from '@components/auth/interfaces/jwt-token-payload.interface';
 import JWT_CONST from 'src/common/constants/jwt.constant';
 
@@ -18,6 +18,7 @@ export default class JwtAccessStrategy extends PassportStrategy(
   }
 
   async validate(payload: JwtTokenPayload) {
+    Logger.log('JWT access strategy');
     return payload;
   }
 }

@@ -9,7 +9,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transformOptions: {
+        // exposeUnsetFields: false,
+      },
+    }),
+  );
   app.useGlobalFilters(new AllExceptionsFilter());
   app.use(morgan('combined'));
 

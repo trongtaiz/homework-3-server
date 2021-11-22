@@ -1,7 +1,9 @@
 import WrapResponseInterceptor from '@interceptors/wrap-response.interceptor';
 import { Controller, Get, UseInterceptors, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 
+@ApiTags('Posts')
 @UseInterceptors(WrapResponseInterceptor)
 @Controller('posts')
 export class PostsController {

@@ -1,6 +1,6 @@
 import AuthUser from '@decorators/auth-user.decorator';
 import JwtAccessGuard from '@guards/jwt-access.guard';
-import TeacherOfClassGuard from '@guards/teacher-of-class.guard';
+import TeacherOfClassGuard from '@components/classes/guards/teacher-of-class.guard';
 import WrapResponseInterceptor from '@interceptors/wrap-response.interceptor';
 import {
   Controller,
@@ -12,10 +12,12 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/createClass.dto';
 import { SendInvitationDto } from './dto/sendInvitation.dto';
 
+@ApiTags('Classes')
 @UseInterceptors(WrapResponseInterceptor)
 @Controller('classes')
 export class ClassesController {
