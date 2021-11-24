@@ -21,4 +21,9 @@ export default class CreateAssignmentDto {
   @IsNotEmpty()
   @IsNumber({})
   point!: number;
+
+  @ApiProperty({ type: Number })
+  @IsNotEmpty()
+  @IsNumber({})
+  order!: number;
 }

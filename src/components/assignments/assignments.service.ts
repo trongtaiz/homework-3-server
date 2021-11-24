@@ -31,7 +31,7 @@ export default class AssignmentsService {
     });
 
     const newAssignment = await this.assignmentsRepository.save(
-      this.assignmentsRepository.create({ ...dto, order: assignments.length }),
+      this.assignmentsRepository.create(dto),
     );
 
     return newAssignment;
