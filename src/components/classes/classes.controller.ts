@@ -11,11 +11,21 @@ import {
   Query,
   Param,
   UseGuards,
+  BadRequestException,
+  Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/createClass.dto';
 import { SendInvitationDto } from './dto/sendInvitation.dto';
+
+import * as xlsx from 'xlsx';
+import { plainToClass } from 'class-transformer';
+
+import { validateSync } from 'class-validator';
+import express from 'express';
+import UploadStudentListXLSXDto from './dto/upload-student-list-xlsx.dto';
+import UploadStudentListDto from './dto/upload-student-list.dto';
 
 @ApiTags('Classes')
 @UseInterceptors(WrapResponseInterceptor)
@@ -93,5 +103,49 @@ export class ClassesController {
   @Get('/:id')
   getClassDetail(@Param() params) {
     return this.classesService.getClassDetail(params.id);
+  }
+
+  @Post('students/upload')
+  @UseGuards(JwtAccessGuard, TeacherOfClassGuard)
+  // @UseInterceptors(
+  //   FileInterceptor('file', {
+  //     // storage: diskStorage({
+  //     //   destination: 'uploads/grades',
+  //     //   filename: (req, file, cb) => {
+  //     //     cb(null, `${req.body.classId}.xlsx`);
+  //     //   },
+  //     // }),
+  //     storage: memoryStorage(),
+  //   }),
+  // )
+  async uploadStudentList(
+    @Body() { classId }: UploadStudentListDto,
+    // @UploadedFile() file: Express.Multer.File,
+    @Request() req: express.Request,
+  ) {
+    const workbook = xlsx.read((req.files as any[])[0].buffer, {
+      type: 'buffer',
+    });
+    const parsed = xlsx.utils.sheet_to_json(
+      workbook.Sheets[workbook.SheetNames[0]],
+    ) as { studentId: string; fullName: string }[];
+
+    console.log(parsed);
+    let students = plainToClass(UploadStudentListXLSXDto, parsed);
+    students.forEach((student) => {
+      const errors = validateSync(student);
+      if (errors.length > 0) {
+        console.log(errors);
+        throw new BadRequestException('Invalid input format');
+      }
+    });
+
+    return this.classesService.upsertAllStudentsOfClass(classId, students);
+  }
+
+  @UseGuards(JwtAccessGuard, TeacherOfClassGuard)
+  @Get('assignments/all/points')
+  async getAllAssignmentPoints(@Query('classId') classId: string) {
+    return this.classesService.getAllAssignmentPoints(classId);
   }
 }

@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { Repository } from 'typeorm';
 import CreateAssignmentDto from './dto/create-assignment.dto';
-import GetAssignmentsDto from './dto/get-assignments.dto';
 import UpdateAssignmentDto from './dto/update-assignment.dto';
+import AssignmentOfStudentEntity from './entities/assignment-student.entity';
 import AssignmentsEntity from './entities/assignments.entity';
 
 @Injectable()
@@ -12,6 +12,8 @@ export default class AssignmentsService {
   constructor(
     @InjectRepository(AssignmentsEntity)
     private readonly assignmentsRepository: Repository<AssignmentsEntity>,
+    @InjectRepository(AssignmentOfStudentEntity)
+    private readonly assignmentOfStudentRepository: Repository<AssignmentOfStudentEntity>,
   ) {}
 
   async getOfClass(classId: string) {
@@ -63,5 +65,40 @@ export default class AssignmentsService {
 
     if (deleteResult.affected === 0) throw new BadRequestException();
     return { message: 'Assignment deleted successfully' };
+  }
+
+  async upsertAssignmentPoints(
+    classId: string,
+    assignmentId: string,
+    points: {
+      studentId: string;
+      achievedPoint: number;
+    }[],
+  ) {
+    return this.assignmentOfStudentRepository.save(
+      this.assignmentOfStudentRepository.create(
+        points.map((e) => ({
+          ...e,
+          assignmentId,
+          classId,
+        })),
+      ),
+    );
+  }
+
+  async updateAchievedPoint(
+    classId: string,
+    assignmentId: string,
+    studentId: string,
+    achievedPoint: number,
+  ) {
+    return this.assignmentOfStudentRepository.save(
+      this.assignmentOfStudentRepository.create({
+        classId,
+        assignmentId,
+        studentId,
+        achievedPoint,
+      }),
+    );
   }
 }

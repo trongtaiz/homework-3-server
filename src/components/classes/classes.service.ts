@@ -10,6 +10,9 @@ import { CreateClassDto } from './dto/createClass.dto';
 import { RolesEnum } from '@decorators/roles.decorator';
 import JWT_CONST from '@common/constants/jwt.constant';
 import { MailUtil } from '@utils/mail.util';
+import AllStudentsOfClassEntity from './entities/all-students-class.entity';
+import { plainToClass } from 'class-transformer';
+import _ from 'lodash';
 
 @Injectable()
 export class ClassesService {
@@ -23,6 +26,8 @@ export class ClassesService {
     private userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
     private readonly mailUtil: MailUtil,
+    @InjectRepository(AllStudentsOfClassEntity)
+    private allStudentsOfClassRepository: Repository<AllStudentsOfClassEntity>,
   ) {}
 
   async createClass(userId, createClassInput: CreateClassDto) {
@@ -221,5 +226,42 @@ export class ClassesService {
     });
     if (teacher) return 'TEACHER';
     return null;
+  }
+
+  async upsertAllStudentsOfClass(
+    classId: string,
+    students: { studentId: string; fullName: string }[],
+  ) {
+    return this.allStudentsOfClassRepository.save(
+      this.allStudentsOfClassRepository.create(
+        students.map((e) => ({
+          ...e,
+          classId,
+        })),
+      ),
+    );
+  }
+
+  async getAllAssignmentPoints(classId: string) {
+    const data = await this.allStudentsOfClassRepository
+      .createQueryBuilder('std')
+      .leftJoinAndSelect('std.studentAccount', 'studentAccount')
+      .leftJoinAndSelect('studentAccount.user', 'user')
+      .leftJoinAndSelect('std.assignments', 'assignments')
+      .leftJoinAndSelect('assignments.detail', 'detail')
+      .where(`std.classId = '${classId}'`)
+      .getMany();
+
+    // console.log(data);
+
+    data.forEach((e) => {
+      if (e.studentAccount)
+        e.studentAccount = _.pick(e.studentAccount?.user, [
+          'id',
+          'email',
+          'name',
+        ]) as any;
+    });
+    return data;
   }
 }

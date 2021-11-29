@@ -11,9 +11,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      transformOptions: {
-        // exposeUnsetFields: false,
-      },
+      transform: true,
     }),
   );
   app.useGlobalFilters(new AllExceptionsFilter());

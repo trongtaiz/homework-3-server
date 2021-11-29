@@ -20,14 +20,14 @@ export default class AllExceptionsFilter implements ExceptionFilter {
 
     const message =
       exception instanceof HttpException
-        ? exception.getResponse()
+        ? (exception.getResponse() as any).message
         : 'INTERNAL_SERVER_ERROR';
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) Logger.error(exception);
 
     response.status(status).json({
       statusCode: status,
-      message,    
+      message,
       path: request.url,
     });
   }

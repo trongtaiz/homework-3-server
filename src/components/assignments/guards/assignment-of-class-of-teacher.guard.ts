@@ -10,7 +10,7 @@ export default class AssignmentOfClassOfTeacherGuard implements CanActivate {
   ) {}
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    const assignmentId = request.body.id;
+    const assignmentId = request.body.assignmentId || request.body.id;
 
     if (!assignmentId) return false;
 
@@ -23,6 +23,8 @@ export default class AssignmentOfClassOfTeacherGuard implements CanActivate {
       request.user.id,
       assignment.classId,
     );
+
+    if (isTeacherOfClass) request.body.classId = assignment.classId;
 
     return isTeacherOfClass;
   }
