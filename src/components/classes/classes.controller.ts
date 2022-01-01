@@ -80,18 +80,14 @@ export class ClassesController {
   }
 
   @Get('/changeStudentId/')
-  changeStudentId(
-    @Query('classId') classId,
-    @Query('userId') userId,
-    @Query('studentId') studentId,
-  ) {
-    console.log('query', classId, userId, studentId);
-    return this.classesService.changeStudentId(classId, userId, studentId);
+  changeStudentId(@Query('userId') userId, @Query('studentId') studentId) {
+    console.log('query', userId, studentId);
+    return this.classesService.changeStudentId(userId, studentId);
   }
   @Get('/fetchStudentId/')
-  fetchStudentId(@Query('classId') classId, @Query('userId') userId) {
-    console.log('query', classId, userId);
-    return this.classesService.fetchStudentId(classId, userId);
+  fetchStudentId(@Query('userId') userId) {
+    console.log('query', userId);
+    return this.classesService.fetchStudentId(userId);
   }
   @Get('/role')
   getRole(@Query('classId') classId, @Query('userId') userId) {

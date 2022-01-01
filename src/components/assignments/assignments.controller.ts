@@ -39,7 +39,7 @@ export default class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
   @UseInterceptors(WrapResponseInterceptor)
-  // @UseGuards(JwtAccessGuard, ParticipateInClassGuard)
+  @UseGuards(JwtAccessGuard, ParticipateInClassGuard)
   @Get()
   async getAssignments(@Query() dto: GetAssignmentsDto) {
     return this.assignmentsService.getOfClass(dto.classId);

@@ -8,10 +8,9 @@ import {
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
-import { StudentClass } from './studentClass.entity';
 
-@Entity('AllStudentsOfClass')
-export default class AllStudentsOfClassEntity {
+@Entity('UploadedStudents')
+export default class UploadedStudentsEntity {
   @PrimaryColumn()
   studentId!: string;
 
@@ -21,9 +20,9 @@ export default class AllStudentsOfClassEntity {
   @Column({ nullable: true })
   fullName?: string;
 
-  @ManyToOne(() => StudentClass, { createForeignKeyConstraints: false })
-  @JoinColumn({ name: 'studentId', referencedColumnName: 'student_id' })
-  studentAccount?: StudentClass;
+  @ManyToOne(() => UserEntity, { createForeignKeyConstraints: false })
+  @JoinColumn({ name: 'studentId', referencedColumnName: 'studentId' })
+  studentAccount?: UserEntity;
 
   @OneToMany(
     () => AssignmentOfStudentEntity,

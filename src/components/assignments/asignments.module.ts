@@ -9,8 +9,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import AssignmentsService from './assignments.service';
 import AssignmentsController from './assignments.controller';
 import { ClassesModule } from '@components/classes/classes.module';
-import AssignmentOfStudentEntity from './entities/assignment-student.entity';
 import { ParseFormDataMiddleware } from 'src/middlewares/parse-form-data.middleware';
+import AssignmentOfStudentEntity from './entities/assignment-student.entity';
 
 @Module({
   imports: [

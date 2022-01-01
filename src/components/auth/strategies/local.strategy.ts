@@ -26,6 +26,8 @@ export default class LocalStrategy extends PassportStrategy(Strategy) {
     email: string,
     password: string,
   ): Promise<JwtTokenPayload> {
+    console.log(req.body);
+
     const errors = await validate(new SignInDto(req.body));
 
     if (errors.length > 0) {

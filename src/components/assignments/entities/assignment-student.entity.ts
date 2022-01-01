@@ -1,7 +1,8 @@
-import AllStudentsOfClassEntity from '@components/classes/entities/all-students-class.entity';
+import UploadedStudentsEntity from '@components/classes/entities/uploaded-students.entity';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToOne,
@@ -18,19 +19,20 @@ export default class AssignmentOfStudentEntity {
   studentId!: string;
 
   @Column()
+  @Index()
   classId!: string;
 
   @Column({ default: -1 })
   achievedPoint!: number;
 
-  @ManyToOne(() => AllStudentsOfClassEntity, (std) => std.assignments, {
+  @ManyToOne(() => UploadedStudentsEntity, (std) => std.assignments, {
     createForeignKeyConstraints: false,
   })
   @JoinColumn([
     { name: 'studentId', referencedColumnName: 'studentId' },
     { name: 'classId', referencedColumnName: 'classId' },
   ])
-  student?: AllStudentsOfClassEntity;
+  student?: UploadedStudentsEntity;
 
   @OneToOne(() => AssignmentsEntity, { createForeignKeyConstraints: false })
   @JoinColumn({ name: 'assignmentId' })

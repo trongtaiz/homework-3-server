@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Classes } from './entities/classes.entity';
@@ -10,8 +14,7 @@ import { CreateClassDto } from './dto/createClass.dto';
 import { RolesEnum } from '@decorators/roles.decorator';
 import JWT_CONST from '@common/constants/jwt.constant';
 import { MailUtil } from '@utils/mail.util';
-import AllStudentsOfClassEntity from './entities/all-students-class.entity';
-import { plainToClass } from 'class-transformer';
+import UploadedStudentEntity from './entities/uploaded-students.entity';
 import _ from 'lodash';
 
 @Injectable()
@@ -26,8 +29,8 @@ export class ClassesService {
     private userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
     private readonly mailUtil: MailUtil,
-    @InjectRepository(AllStudentsOfClassEntity)
-    private allStudentsOfClassRepository: Repository<AllStudentsOfClassEntity>,
+    @InjectRepository(UploadedStudentEntity)
+    private uploadedStudentRepository: Repository<UploadedStudentEntity>,
   ) {}
 
   async createClass(userId, createClassInput: CreateClassDto) {
@@ -191,28 +194,30 @@ export class ClassesService {
     });
   }
 
-  public async changeStudentId(classId, userId, studentId) {
-    const data = await this.studentClassRepository.findOne({
-      where: { class_id: classId, student_id: studentId },
+  public async changeStudentId(userId: string, studentId: string) {
+    const data = await this.userRepository.findOne({
+      id: userId,
+      studentId,
     });
-    if (data) return null;
-    const res = await this.studentClassRepository.update(
+
+    if (data) throw new BadRequestException('This studentId is already taken');
+
+    const res = await this.userRepository.update(
       {
-        class_id: classId,
-        user_id: userId,
+        id: userId,
       },
       {
-        student_id: studentId,
+        studentId,
       },
     );
     if (res.affected == 1) return studentId;
   }
-  public async fetchStudentId(classId, userId) {
-    const data = await this.studentClassRepository.findOne({
-      where: { class_id: classId, user_id: userId },
-    });
-    if (data) return data.student_id;
-    return null;
+  public async fetchStudentId(userId: string) {
+    const data = await this.userRepository.findOne({ id: userId });
+
+    if (!data) throw new NotFoundException();
+
+    return data.studentId;
   }
 
   async getRole(classId, userId) {
@@ -232,8 +237,8 @@ export class ClassesService {
     classId: string,
     students: { studentId: string; fullName: string }[],
   ) {
-    return this.allStudentsOfClassRepository.save(
-      this.allStudentsOfClassRepository.create(
+    return this.uploadedStudentRepository.save(
+      this.uploadedStudentRepository.create(
         students.map((e) => ({
           ...e,
           classId,
@@ -243,10 +248,10 @@ export class ClassesService {
   }
 
   async getAllAssignmentPoints(classId: string) {
-    const data = await this.allStudentsOfClassRepository
+    const data = await this.uploadedStudentRepository
       .createQueryBuilder('std')
       .leftJoinAndSelect('std.studentAccount', 'studentAccount')
-      .leftJoinAndSelect('studentAccount.user', 'user')
+      // .leftJoinAndSelect('studentAccount.user', 'user')
       .leftJoinAndSelect('std.assignments', 'assignments')
       .leftJoinAndSelect('assignments.detail', 'detail')
       .where(`std.classId = '${classId}'`)
@@ -256,7 +261,7 @@ export class ClassesService {
 
     data.forEach((e) => {
       if (e.studentAccount)
-        e.studentAccount = _.pick(e.studentAccount?.user, [
+        e.studentAccount = _.pick(e.studentAccount, [
           'id',
           'email',
           'name',

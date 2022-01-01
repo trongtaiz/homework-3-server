@@ -10,6 +10,11 @@ export default class UserEntity extends AbstractEntity {
   id!: string;
 
   @ApiProperty({ type: String, maxLength: 64 })
+  @Column({ nullable: true })
+  @Index({ unique: true })
+  studentId?: string;
+
+  @ApiProperty({ type: String, maxLength: 64 })
   @Column({ length: 64, nullable: true })
   @Index({ unique: true })
   email?: string;

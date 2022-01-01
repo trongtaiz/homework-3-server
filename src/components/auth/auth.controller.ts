@@ -36,8 +36,9 @@ export default class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('sign-in')
   async signIn(@Request() req: ExpressRequest) {
+    console.log('DEBUG');
     const user = req.user as UserEntity;
-
+    // return 'WORK';
     return this.authService.login(user);
   }
 

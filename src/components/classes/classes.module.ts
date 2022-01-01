@@ -16,8 +16,9 @@ import { MailModule } from '@utils/mail.util';
 import ParticipateInClassGuard from '@components/classes/guards/participate-in-class.guard';
 import StudentOfClassGuard from '@components/classes/guards/student-of-class.guard';
 import TeacherOfClassGuard from '@components/classes/guards/teacher-of-class.guard';
-import AllStudentOfClassEntity from './entities/all-students-class.entity';
 import { ParseFormDataMiddleware } from 'src/middlewares/parse-form-data.middleware';
+import UploadedStudentsEntity from './entities/uploaded-students.entity';
+import UsersModule from '@components/users/users.module';
 
 @Module({
   imports: [
@@ -27,9 +28,10 @@ import { ParseFormDataMiddleware } from 'src/middlewares/parse-form-data.middlew
       StudentClass,
       TeacherClass,
       UserEntity,
-      AllStudentOfClassEntity,
+      UploadedStudentsEntity,
     ]),
     MailModule,
+    UsersModule,
   ],
   controllers: [ClassesController],
   providers: [
@@ -47,11 +49,9 @@ import { ParseFormDataMiddleware } from 'src/middlewares/parse-form-data.middlew
 })
 export class ClassesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(ParseFormDataMiddleware)
-      .forRoutes({
-        path: 'classes/students/upload',
-        method: RequestMethod.POST,
-      });
+    consumer.apply(ParseFormDataMiddleware).forRoutes({
+      path: 'classes/students/upload',
+      method: RequestMethod.POST,
+    });
   }
 }
