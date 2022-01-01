@@ -35,6 +35,9 @@ export default class UserEntity extends AbstractEntity {
   @Index({ unique: true })
   ggId?: string;
 
+  @Column({ default: false })
+  isActive!: boolean;
+
   // @ApiProperty({ type: String, default: RolesEnum.STUDENT, enum: RolesEnum })
   // @Column({ type: 'enum', enum: RolesEnum, default: RolesEnum.STUDENT })
   // role!: RolesEnum;

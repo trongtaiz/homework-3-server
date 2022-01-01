@@ -2,7 +2,11 @@ import * as nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import * as path from 'path';
 import hbs from 'nodemailer-express-handlebars';
-import { Injectable, Module } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Module,
+} from '@nestjs/common';
 
 @Injectable()
 export class MailUtil {
@@ -49,6 +53,27 @@ export class MailUtil {
       await this.transporter.sendMail(email);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async sendVerifyEmail(token: string, email: string) {
+    console.log(`${process.env.FRONTEND_URL}/verify-email/${token}`);
+    const options = {
+      from: `"Google classroom" <${process.env.EMAIL}>`,
+      to: email,
+      subject: 'Verify Email',
+      template: 'verify-email',
+      context: {
+        title: 'Verify Email',
+        verifyLink: `${process.env.FRONTEND_URL}/verify-email/${token}`,
+      },
+    };
+
+    try {
+      await this.transporter.sendMail(options);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
     }
   }
 }

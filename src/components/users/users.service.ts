@@ -20,6 +20,10 @@ export default class UsersService {
     private readonly usersRepository: Repository<UserEntity>,
   ) {}
 
+  getRepository() {
+    return this.usersRepository;
+  }
+
   public async create(dto: SignUpDto): Promise<UserEntity> {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
@@ -72,6 +76,7 @@ export default class UsersService {
           ...dynamicConditions,
           email: userInfo.email,
           name: userInfo.name,
+          isActive: true,
         }),
       );
 

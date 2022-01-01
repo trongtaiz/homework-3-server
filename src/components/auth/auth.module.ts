@@ -11,12 +11,15 @@ import AuthEntity from './entities/auth.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import FacebookTokenStrategy from './strategies/facebook-token.stategy';
 import GoogleTokenStrategy from './strategies/google-token.strategy';
+import UserEntity from '@components/users/entities/users.entity';
+import { MailModule } from '@utils/mail.util';
 @Module({
   imports: [
     UsersModule,
     PassportModule,
     JwtModule.register({}),
-    TypeOrmModule.forFeature([AuthEntity]),
+    TypeOrmModule.forFeature([AuthEntity, UserEntity]),
+    MailModule,
   ],
   providers: [
     AuthService,

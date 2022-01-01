@@ -36,9 +36,7 @@ export default class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('sign-in')
   async signIn(@Request() req: ExpressRequest) {
-    console.log('DEBUG');
     const user = req.user as UserEntity;
-    // return 'WORK';
     return this.authService.login(user);
   }
 
@@ -48,6 +46,12 @@ export default class AuthController {
   @Post('sign-up')
   async signUp(@Body() dto: SignUpDto) {
     return this.authService.signUp(dto);
+  }
+
+  @UseInterceptors(WrapResponseInterceptor)
+  @Post('verify-email')
+  async verifyEmail(@Body('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 
   @UseGuards(JwtRefreshGuard)

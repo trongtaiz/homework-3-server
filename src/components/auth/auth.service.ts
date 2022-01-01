@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import sha256 from 'crypto-js/sha256';
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -16,6 +16,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import AuthEntity from './entities/auth.entity';
 import { Repository } from 'typeorm';
 import UserEntity from '@components/users/entities/users.entity';
+import { MailUtil } from '@utils/mail.util';
 
 @Injectable()
 export default class AuthService {
@@ -24,12 +25,16 @@ export default class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(AuthEntity)
     private readonly authRepository: Repository<AuthEntity>,
+    private readonly mailUtil: MailUtil,
   ) {}
 
   async validateUser(email: string, password: string) {
     const user = await this.usersService.getUser({ email });
 
     console.log(user);
+
+    if (!user?.isActive)
+      throw new BadRequestException('Account has not been activated');
 
     if (!user) {
       throw new NotFoundException();
@@ -50,7 +55,34 @@ export default class AuthService {
     }
 
     const newUser = await this.usersService.create(dto);
-    return this.login(newUser);
+
+    // send email
+    const verifyToken = this.jwtService.sign(
+      { id: newUser.id },
+      { secret: process.env.JWT_SECRET },
+    );
+    await this.mailUtil.sendVerifyEmail(verifyToken, newUser.email!);
+
+    return { message: 'Activation link sent to email' };
+    // return this.login(newUser);
+  }
+
+  async verifyEmail(token: string) {
+    const { id } = await this.jwtService
+      .verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      })
+      .catch((err) => {
+        throw new UnauthorizedException();
+      });
+
+    // successfully verify email
+    const data = await this.usersService
+      .getRepository()
+      .update({ id }, { isActive: true });
+
+    if (data.affected == 0) throw new BadRequestException();
+    return { message: 'successfully verify email' };
   }
 
   async socialLogin(
