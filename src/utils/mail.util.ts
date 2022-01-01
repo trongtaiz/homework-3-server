@@ -76,6 +76,27 @@ export class MailUtil {
       throw new InternalServerErrorException();
     }
   }
+
+  async sendForgotPassword(token: string, email: string) {
+    console.log(`${process.env.FRONTEND_URL}/reset-password/${token}`);
+    const options = {
+      from: `"Google classroom" <${process.env.EMAIL}>`,
+      to: email,
+      subject: 'Reset Password',
+      template: 'reset-password',
+      context: {
+        title: 'Reset Password',
+        verifyLink: `${process.env.FRONTEND_URL}/reset-password/${token}`,
+      },
+    };
+
+    try {
+      await this.transporter.sendMail(options);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
 }
 
 @Module({

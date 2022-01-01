@@ -59,7 +59,7 @@ export default class AuthService {
     // send email
     const verifyToken = this.jwtService.sign(
       { id: newUser.id },
-      { secret: process.env.JWT_SECRET },
+      { secret: process.env.VERIFY_EMAIL_SECRET, expiresIn: 10 * 60 * 1000 },
     );
     await this.mailUtil.sendVerifyEmail(verifyToken, newUser.email!);
 
@@ -70,7 +70,7 @@ export default class AuthService {
   async verifyEmail(token: string) {
     const { id } = await this.jwtService
       .verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
+        secret: process.env.VERIFY_EMAIL_SECRET,
       })
       .catch((err) => {
         throw new UnauthorizedException();
@@ -83,6 +83,39 @@ export default class AuthService {
 
     if (data.affected == 0) throw new BadRequestException();
     return { message: 'successfully verify email' };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.usersService.getUser({ email });
+
+    if (!user) throw new NotFoundException();
+
+    // send email
+    const token = await this.jwtService.sign(
+      { id: user.id },
+      { secret: process.env.FORGOT_PW_SECRET, expiresIn: 5 * 60 * 1000 },
+    );
+    await this.mailUtil.sendForgotPassword(token, email);
+    return { message: 'Reset password link sent to email' };
+  }
+
+  async resetPassword(verifyToken: string, newPassword: string) {
+    const { id } = await this.jwtService
+      .verifyAsync(verifyToken, {
+        secret: process.env.FORGOT_PW_SECRET,
+      })
+      .catch((error) => {
+        throw new UnauthorizedException();
+      });
+
+    // update pw
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+    const data = await this.usersService
+      .getRepository()
+      .update({ id }, { password: hashedPassword });
+
+    if (data.affected === 0) throw new BadRequestException();
+    return { message: 'Password reset successfully' };
   }
 
   async socialLogin(
