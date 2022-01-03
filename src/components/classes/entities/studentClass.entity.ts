@@ -13,11 +13,15 @@ export class StudentClass {
   // @Column({ nullable: true })
   // student_id?: string;
 
-  @ManyToOne((type) => User, (users) => users.id)
+  @ManyToOne((type) => User, (users) => users.id, {
+    createForeignKeyConstraints: false,
+  })
   @JoinColumn({ name: 'user_id' })
   public user!: User;
 
-  @ManyToOne((type) => Classes, (classes) => classes.id)
+  @ManyToOne((type) => Classes, (classes) => classes.id, {
+    createForeignKeyConstraints: false,
+  })
   @JoinColumn({ name: 'class_id' })
   public class!: Classes;
 }

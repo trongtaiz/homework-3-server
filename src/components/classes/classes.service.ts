@@ -75,7 +75,7 @@ export class ClassesService {
     return result;
   }
 
-  async getInviteId(classId: number) {
+  async getInviteId(classId: string) {
     return this.classesRepository.findOne(
       { id: classId },
       { select: ['invite_id'] },
@@ -172,6 +172,17 @@ export class ClassesService {
   public async isStudentOfClass(studentId: string, classId: string) {
     const foundItems: any[] = await this.classesRepository.query(`
       SELECT * FROM StudentClass WHERE user_id = '${studentId}' AND class_id = ${parseInt(
+      classId,
+    )}
+    `);
+
+    if (foundItems.length > 0) return true;
+    return false;
+  }
+
+  public async isUploadedStudentOfClass(studentId: string, classId: string) {
+    const foundItems: any[] = await this.classesRepository.query(`
+      SELECT * FROM UploadedStudents WHERE studentId = '${studentId}' AND classId = ${parseInt(
       classId,
     )}
     `);

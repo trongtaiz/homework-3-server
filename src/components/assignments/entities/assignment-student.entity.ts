@@ -25,6 +25,9 @@ export default class AssignmentOfStudentEntity {
   @Column({ default: -1 })
   achievedPoint!: number;
 
+  @Column({ default: false })
+  isFinalized!: boolean;
+
   @ManyToOne(() => UploadedStudentsEntity, (std) => std.assignments, {
     createForeignKeyConstraints: false,
   })

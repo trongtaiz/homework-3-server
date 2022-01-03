@@ -94,7 +94,7 @@ export default class UsersService {
 
   public async getUserInfo(userId: string) {
     const foundUser = await this.getUser({ id: userId });
-    return _.pick(foundUser, ['email', 'name', 'id']);
+    return _.pick(foundUser, ['email', 'name', 'id', 'studentId']);
   }
 
   public async updateUser(userId: string, dto: UpdateUserDto) {
@@ -103,5 +103,11 @@ export default class UsersService {
     const updateResult = await this.usersRepository.update(userId, dto);
     if (updateResult.affected === 0) throw new BadRequestException();
     return true;
+  }
+
+  async isUserHasStudentId(userId: string, studentId: string) {
+    const user = await this.usersRepository.findOne({ id: userId });
+
+    return user!.studentId === studentId;
   }
 }

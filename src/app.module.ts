@@ -7,6 +7,7 @@ import UsersModule from '@components/users/users.module';
 import { MailModule } from '@utils/mail.util';
 import { PostsModule } from '@components/posts/posts.module';
 import AssignmentsModule from '@components/assignments/asignments.module';
+import ReviewsModule from '@components/reviews/review.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import AssignmentsModule from '@components/assignments/asignments.module';
     MailModule,
     PostsModule,
     AssignmentsModule,
+    ReviewsModule,
   ],
 })
 export class AppModule {}

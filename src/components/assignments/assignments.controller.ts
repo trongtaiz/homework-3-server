@@ -22,10 +22,8 @@ import CreateAssignmentDto from './dto/create-assignment.dto';
 import GetAssignmentsDto from './dto/get-assignments.dto';
 import UpdateAssignmentDto from './dto/update-assignment.dto';
 import TeacherOfClassGuard from '@components/classes/guards/teacher-of-class.guard';
-import AssignmentOfClassOfTeacherGuard from './guards/assignment-of-class-of-teacher.guard';
+import AssignmentOfTeacherGuard from './guards/assignment-of-teacher.guard';
 import RemoveAssignmentDto from './dto/remove-assignment-dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
 import * as xlsx from 'xlsx';
 import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
@@ -53,7 +51,7 @@ export default class AssignmentsController {
   }
 
   @UseInterceptors(WrapResponseInterceptor)
-  @UseGuards(JwtAccessGuard, AssignmentOfClassOfTeacherGuard)
+  @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @Patch()
   async updateAssignment(@Body() dto: UpdateAssignmentDto) {
     // Logger.log(
@@ -65,14 +63,14 @@ export default class AssignmentsController {
   }
 
   @UseInterceptors(WrapResponseInterceptor)
-  @UseGuards(JwtAccessGuard, AssignmentOfClassOfTeacherGuard)
+  @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @Delete()
   async removeAssignment(@Body() dto: RemoveAssignmentDto) {
     return this.assignmentsService.deleteAssignment(dto.id);
   }
 
   @Post('points/upload')
-  @UseGuards(JwtAccessGuard, AssignmentOfClassOfTeacherGuard)
+  @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @UseInterceptors(WrapResponseInterceptor)
   // @UseInterceptors(
   //   FileInterceptor('file', {
@@ -114,7 +112,7 @@ export default class AssignmentsController {
     );
   }
 
-  @UseGuards(JwtAccessGuard, AssignmentOfClassOfTeacherGuard)
+  @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @Patch('points')
   async updateAchievedPoint(
     @Body()

@@ -12,8 +12,8 @@ import AssignmentEntity from '@components/assignments/entities/assignments.entit
 
 @Entity('Classes')
 export class Classes {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id!: string;
 
   @Column()
   name!: string;
@@ -30,7 +30,9 @@ export class Classes {
   @Column({ default: 1 })
   create_by!: number;
 
-  @ManyToOne((type) => User, (users) => users.id)
+  @ManyToOne((type) => User, (users) => users.id, {
+    createForeignKeyConstraints: false,
+  })
   @JoinColumn({ name: 'create_by' })
   public user!: User;
 

@@ -16,6 +16,14 @@ export default class AssignmentsService {
     private readonly assignmentOfStudentRepository: Repository<AssignmentOfStudentEntity>,
   ) {}
 
+  getAssignmentRepository() {
+    return this.assignmentsRepository;
+  }
+
+  getAssignmentOfStudentRepository() {
+    return this.assignmentOfStudentRepository;
+  }
+
   async getOfClass(classId: string) {
     const assignments = await this.assignmentsRepository.find({
       where: { classId },

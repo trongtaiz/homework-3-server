@@ -27,6 +27,9 @@ export default class UploadedStudentsEntity {
   @OneToMany(
     () => AssignmentOfStudentEntity,
     (assignment) => assignment.student,
+    {
+      createForeignKeyConstraints: false,
+    },
   )
   assignments?: AssignmentOfStudentEntity;
 }
