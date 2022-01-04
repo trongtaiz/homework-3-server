@@ -5,6 +5,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ReviewCommentEntity from './entities/review-comments.entity';
 import ReviewEntity from './entities/reviews.entity';
+import ReviewOfTeacherOrStudentGuard from './guards/review-of-teacher-or-student.guard';
 import ReviewsService from './review.service';
 import ReviewsController from './reviews.controller';
 
@@ -16,7 +17,7 @@ import ReviewsController from './reviews.controller';
     UsersModule,
   ],
   controllers: [ReviewsController],
-  providers: [ReviewsService],
-  exports: [ReviewsService],
+  providers: [ReviewsService, ReviewOfTeacherOrStudentGuard],
+  exports: [ReviewsService, ReviewOfTeacherOrStudentGuard],
 })
 export default class ReviewsModule {}

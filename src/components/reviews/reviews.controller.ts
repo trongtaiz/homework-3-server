@@ -15,9 +15,13 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import CreateReviewDto from './dto/create-review.dto';
+import FinalizeReviewDto from './dto/finalize-review.dto';
+import GetAllCommentsOfReviewDto from './dto/get-comments-of-review.dto';
 import GetReviewOfAssignmentOfStudentDto from './dto/get-review-of-assignment-of-student.dto';
 import GetReviewsOfAssignmentDto from './dto/get-reviews-of-assignment.dto';
 import GetReviewsOfClassDto from './dto/get-reviews-of-class.dto';
+import PostReviewCommentDto from './dto/post-review-comment.dto';
+import ReviewOfTeacherOrStudentGuard from './guards/review-of-teacher-or-student.guard';
 import ReviewsService from './review.service';
 
 @ApiTags('Reviews')
@@ -58,5 +62,29 @@ export default class ReviewsController {
     @Query() dto: GetReviewOfAssignmentOfStudentDto,
   ) {
     return this.reviewsService.getReviewOfAssignmentOfStudent(dto);
+  }
+
+  @ApiBody({ type: PostReviewCommentDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtAccessGuard, ReviewOfTeacherOrStudentGuard)
+  @Post('comments')
+  async postReviewComment(@Body() dto: PostReviewCommentDto) {
+    return this.reviewsService.postReviewComment(dto);
+  }
+
+  @ApiQuery({ type: GetAllCommentsOfReviewDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtAccessGuard, ReviewOfTeacherOrStudentGuard)
+  @Get('comments')
+  async getAllCommentsOfReview(@Query() dto: GetAllCommentsOfReviewDto) {
+    return this.reviewsService.getAllCommentsOfReview(dto);
+  }
+
+  @ApiBody({ type: FinalizeReviewDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtAccessGuard, ReviewOfTeacherOrStudentGuard)
+  @Post('finalize')
+  async finalizeReview(@Body() dto: FinalizeReviewDto) {
+    return this.reviewsService.finalizeReview(dto);
   }
 }

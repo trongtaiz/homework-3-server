@@ -32,4 +32,7 @@ export default class AssignmentsEntity extends AbstractEntity {
 
   @Column()
   order!: number;
+
+  @Column({ default: false })
+  isFinalized!: boolean;
 }

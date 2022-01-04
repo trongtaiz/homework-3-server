@@ -26,6 +26,8 @@ import { validateSync } from 'class-validator';
 import express from 'express';
 import UploadStudentListXLSXDto from './dto/upload-student-list-xlsx.dto';
 import UploadStudentListDto from './dto/upload-student-list.dto';
+import GetPointsOfStudentDto from './dto/get-points-of-student.dto';
+import StudentOfClassGuard from './guards/student-of-class.guard';
 
 @ApiTags('Classes')
 @UseInterceptors(WrapResponseInterceptor)
@@ -143,5 +145,11 @@ export class ClassesController {
   @Get('assignments/all/points')
   async getAllAssignmentPoints(@Query('classId') classId: string) {
     return this.classesService.getAllAssignmentPoints(classId);
+  }
+
+  @UseGuards(JwtAccessGuard, StudentOfClassGuard)
+  @Get('student/points')
+  async getAllPointsOfStudent(@Query() dto: GetPointsOfStudentDto) {
+    return this.classesService.getAllPointsOfStudentOfClass(dto);
   }
 }

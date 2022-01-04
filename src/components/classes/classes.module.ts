@@ -4,6 +4,7 @@ import { TeacherClass } from './entities/teacherClass.entity';
 import UserEntity from '@components/users/entities/users.entity';
 import { JwtModule } from '@nestjs/jwt';
 import {
+  forwardRef,
   MiddlewareConsumer,
   Module,
   NestModule,
@@ -19,6 +20,7 @@ import TeacherOfClassGuard from '@components/classes/guards/teacher-of-class.gua
 import { ParseFormDataMiddleware } from 'src/middlewares/parse-form-data.middleware';
 import UploadedStudentsEntity from './entities/uploaded-students.entity';
 import UsersModule from '@components/users/users.module';
+import AssignmentsModule from '@components/assignments/asignments.module';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import UsersModule from '@components/users/users.module';
     ]),
     MailModule,
     UsersModule,
+    forwardRef(() => AssignmentsModule),
   ],
   controllers: [ClassesController],
   providers: [

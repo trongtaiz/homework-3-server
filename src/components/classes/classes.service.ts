@@ -16,6 +16,8 @@ import JWT_CONST from '@common/constants/jwt.constant';
 import { MailUtil } from '@utils/mail.util';
 import UploadedStudentEntity from './entities/uploaded-students.entity';
 import _ from 'lodash';
+import GetPointsOfStudentDto from './dto/get-points-of-student.dto';
+import AssignmentsService from '@components/assignments/assignments.service';
 
 @Injectable()
 export class ClassesService {
@@ -31,6 +33,7 @@ export class ClassesService {
     private readonly mailUtil: MailUtil,
     @InjectRepository(UploadedStudentEntity)
     private uploadedStudentRepository: Repository<UploadedStudentEntity>,
+    private readonly assignmentsService: AssignmentsService,
   ) {}
 
   async createClass(userId, createClassInput: CreateClassDto) {
@@ -278,6 +281,24 @@ export class ClassesService {
           'name',
         ]) as any;
     });
+    return data;
+  }
+
+  async getAllPointsOfStudentOfClass(dto: GetPointsOfStudentDto) {
+    const data = await this.assignmentsService
+      .getAssignmentOfStudentRepository()
+      .find({
+        where: {
+          classId: dto.classId,
+          studentId: dto.studentId,
+        },
+        relations: ['student', 'detail'],
+      });
+
+    data.forEach((e) => {
+      if (!e.detail?.isFinalized) e.achievedPoint = -1;
+    });
+
     return data;
   }
 }

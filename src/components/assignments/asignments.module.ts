@@ -1,4 +1,5 @@
 import {
+  forwardRef,
   MiddlewareConsumer,
   Module,
   NestModule,
@@ -20,7 +21,7 @@ import AssignmentOfTeacherOrStudentGuard from './guards/assignment-of-teacher-or
 @Module({
   imports: [
     TypeOrmModule.forFeature([AssignmentsEntity, AssignmentOfStudentEntity]),
-    ClassesModule,
+    forwardRef(() => ClassesModule),
     UsersModule,
   ],
   providers: [

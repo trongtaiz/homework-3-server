@@ -16,7 +16,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import AssignmentsService from './assignments.service';
 import CreateAssignmentDto from './dto/create-assignment.dto';
 import GetAssignmentsDto from './dto/get-assignments.dto';
@@ -31,6 +31,7 @@ import UploadAssignmentPointXLSXDto from './dto/upload-assignment-point-xlsx.dto
 import UploadAssignmentPointDto from './dto/upload-assignment-point.dto';
 import UpdateAchievedPointDto from './dto/update-achieved-point.dto';
 import express from 'express';
+import FinalizeAssignmentDto from './dto/finalize-assignment.dto';
 @ApiTags('Assignments')
 @Controller('assignments')
 export default class AssignmentsController {
@@ -43,6 +44,7 @@ export default class AssignmentsController {
     return this.assignmentsService.getOfClass(dto.classId);
   }
 
+  @ApiBody({ type: CreateAssignmentDto })
   @UseInterceptors(WrapResponseInterceptor)
   @UseGuards(JwtAccessGuard, TeacherOfClassGuard)
   @Post()
@@ -50,6 +52,7 @@ export default class AssignmentsController {
     return this.assignmentsService.createAssignment(dto);
   }
 
+  @ApiBody({ type: UpdateAssignmentDto })
   @UseInterceptors(WrapResponseInterceptor)
   @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @Patch()
@@ -62,6 +65,7 @@ export default class AssignmentsController {
     return this.assignmentsService.updateAssignment(dto);
   }
 
+  @ApiBody({ type: RemoveAssignmentDto })
   @UseInterceptors(WrapResponseInterceptor)
   @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @Delete()
@@ -69,6 +73,7 @@ export default class AssignmentsController {
     return this.assignmentsService.deleteAssignment(dto.id);
   }
 
+  @ApiBody({ type: UploadAssignmentPointDto })
   @Post('points/upload')
   @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @UseInterceptors(WrapResponseInterceptor)
@@ -112,6 +117,7 @@ export default class AssignmentsController {
     );
   }
 
+  @ApiBody({ type: UpdateAchievedPointDto })
   @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @Patch('points')
   async updateAchievedPoint(
@@ -129,5 +135,12 @@ export default class AssignmentsController {
       studentId,
       newPoint,
     );
+  }
+
+  @ApiBody({ type: FinalizeAssignmentDto })
+  @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
+  @Post('finalize')
+  async finalizeGradeOfAssignment(dto: FinalizeAssignmentDto) {
+    return this.assignmentsService.finalizeAssignment(dto);
   }
 }

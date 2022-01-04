@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { Repository } from 'typeorm';
 import CreateAssignmentDto from './dto/create-assignment.dto';
+import FinalizeAssignmentDto from './dto/finalize-assignment.dto';
 import UpdateAssignmentDto from './dto/update-assignment.dto';
 import AssignmentOfStudentEntity from './entities/assignment-student.entity';
 import AssignmentsEntity from './entities/assignments.entity';
@@ -108,5 +109,12 @@ export default class AssignmentsService {
         achievedPoint,
       }),
     );
+  }
+
+  async finalizeAssignment(dto: FinalizeAssignmentDto) {
+    return this.assignmentsRepository.save({
+      id: dto.assignmentId,
+      isFinalized: true,
+    });
   }
 }
