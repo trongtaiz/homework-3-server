@@ -11,5 +11,8 @@ export default class ReviewCommentEntity extends AbstractEntity {
   reviewId!: string;
 
   @Column()
+  from!: string;
+
+  @Column()
   content!: string;
 }

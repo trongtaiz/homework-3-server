@@ -1,4 +1,5 @@
 import { AbstractEntity } from '@common/entities/abstract.entity';
+import UserEntity from '@components/users/entities/users.entity';
 import {
   Column,
   Entity,
@@ -43,4 +44,10 @@ export default class ReviewEntity extends AbstractEntity {
     { name: 'assignmentId', referencedColumnName: 'assignmentId' },
   ])
   assignmentOfStudent?: AssignmentOfStudentEntity;
+
+  @OneToOne(() => UserEntity, {
+    createForeignKeyConstraints: false,
+  })
+  @JoinColumn([{ name: 'studentId', referencedColumnName: 'studentId' }])
+  student?: UserEntity;
 }

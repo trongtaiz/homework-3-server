@@ -2,6 +2,7 @@ import AssignmentOfTeacherOrStudentGuard from '@components/assignments/guards/as
 import AssignmentOfTeacherGuard from '@components/assignments/guards/assignment-of-teacher.guard';
 import AssignmentOfUploadedStudentGuard from '@components/assignments/guards/assignment-of-uploaded-student.guard';
 import TeacherOfClassGuard from '@components/classes/guards/teacher-of-class.guard';
+import AuthUser from '@decorators/auth-user.decorator';
 import JwtAccessGuard from '@guards/jwt-access.guard';
 import WrapResponseInterceptor from '@interceptors/wrap-response.interceptor';
 import {
@@ -68,8 +69,11 @@ export default class ReviewsController {
   @ApiBearerAuth()
   @UseGuards(JwtAccessGuard, ReviewOfTeacherOrStudentGuard)
   @Post('comments')
-  async postReviewComment(@Body() dto: PostReviewCommentDto) {
-    return this.reviewsService.postReviewComment(dto);
+  async postReviewComment(
+    @AuthUser() user: any,
+    @Body() dto: PostReviewCommentDto,
+  ) {
+    return this.reviewsService.postReviewComment(user.id, dto);
   }
 
   @ApiQuery({ type: GetAllCommentsOfReviewDto })

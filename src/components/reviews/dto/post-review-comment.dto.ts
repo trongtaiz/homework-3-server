@@ -9,6 +9,12 @@ export default class PostReviewCommentDto {
   @Type(() => String)
   reviewId!: string;
 
+  // @ApiProperty({ type: String })
+  // @IsString()
+  // @IsNotEmpty()
+  // @Type(() => String)
+  // from!: string;
+
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()

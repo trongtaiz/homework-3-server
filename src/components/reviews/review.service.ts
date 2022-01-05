@@ -2,6 +2,7 @@ import AssignmentsService from '@components/assignments/assignments.service';
 import { ClassesService } from '@components/classes/classes.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import _ from 'lodash';
 import { Repository } from 'typeorm';
 import CreateReviewDto from './dto/create-review.dto';
 import FinalizeReviewDto from './dto/finalize-review.dto';
@@ -68,16 +69,24 @@ export default class ReviewsService {
     return this.reviewRepository.findOne({ id: reviewId });
   }
 
-  async postReviewComment(dto: PostReviewCommentDto) {
+  async postReviewComment(userId: string, dto: PostReviewCommentDto) {
     return this.reviewCommentRepository.save(
-      this.reviewCommentRepository.create(dto),
+      this.reviewCommentRepository.create({ ...dto, from: userId }),
     );
   }
 
   async getAllCommentsOfReview(dto: GetAllCommentsOfReviewDto) {
-    return this.reviewCommentRepository.find({
-      reviewId: dto.reviewId,
+    const comments = await this.reviewCommentRepository.find({
+      where: {
+        reviewId: dto.reviewId,
+      },
+      order: {
+        createdAt: 'ASC',
+      },
     });
+
+    const participants = await this.getParticipantsOfReview(dto.reviewId);
+    return { comments, participants };
   }
 
   async finalizeReview(dto: FinalizeReviewDto) {
@@ -85,5 +94,31 @@ export default class ReviewsService {
       id: dto.reviewId,
       finalGrade: dto.finalGrade,
     });
+  }
+
+  async getParticipantsOfReview(reviewId: string) {
+    const review = await this.reviewRepository.findOne({
+      where: {
+        id: reviewId,
+      },
+      relations: ['student'],
+    });
+
+    console.log(review);
+
+    // get teachers
+    const teachers = await this.classesService.getTeachersInClass(
+      review!.classId,
+    );
+
+    console.log(teachers);
+
+    const participants = {};
+
+    teachers.forEach((e) => {
+      participants[e.user_id] = _.pick(e.user, ['name', 'id']);
+    });
+    participants[review!.student!.id] = _.pick(review!.student, ['name', 'id']);
+    return participants;
   }
 }
