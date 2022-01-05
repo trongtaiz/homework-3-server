@@ -20,7 +20,7 @@ import TeacherOfClassGuard from '@components/classes/guards/teacher-of-class.gua
 import { ParseFormDataMiddleware } from 'src/middlewares/parse-form-data.middleware';
 import UploadedStudentsEntity from './entities/uploaded-students.entity';
 import UsersModule from '@components/users/users.module';
-import AssignmentsModule from '@components/assignments/asignments.module';
+import AssignmentsModule from '@components/assignments/assignments.module';
 
 @Module({
   imports: [
