@@ -20,19 +20,6 @@ import { NotificationsService } from './notifications.service';
 export class NotificationsController {
   constructor(private notificationsService: NotificationsService) {}
 
-  @UseGuards(JwtAccessGuard)
-  @Post('/')
-  createNotification(@Body() data) {
-    console.log('receivers: ', data.receivers);
-    console.log('dto: ', data.dto);
-    for (const receiver of data.receivers) {
-      this.notificationsService.createNotification({
-        ...data.dto,
-        receiverId: receiver,
-      });
-    }
-  }
-
   @ApiBody({ type: UpdateNotificationDto })
   @UseInterceptors(WrapResponseInterceptor)
   @UseGuards(JwtAccessGuard)
