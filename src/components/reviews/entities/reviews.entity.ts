@@ -36,9 +36,13 @@ export default class ReviewEntity extends AbstractEntity {
   @Column({ nullable: true })
   finalGrade?: number;
 
-  @OneToOne(() => AssignmentOfStudentEntity, {
-    createForeignKeyConstraints: false,
-  })
+  @OneToOne(
+    () => AssignmentOfStudentEntity,
+    (assignmentOfStudent) => assignmentOfStudent.review,
+    {
+      createForeignKeyConstraints: false,
+    },
+  )
   @JoinColumn([
     { name: 'studentId', referencedColumnName: 'studentId' },
     { name: 'assignmentId', referencedColumnName: 'assignmentId' },

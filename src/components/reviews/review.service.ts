@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Repository } from 'typeorm';
 import CreateReviewDto from './dto/create-review.dto';
 import FinalizeReviewDto from './dto/finalize-review.dto';
+import GetAllReviewOfStudentDto from './dto/get-all-review-in-a-class-of-student.dto';
 import GetAllCommentsOfReviewDto from './dto/get-comments-of-review.dto';
 import GetReviewOfAssignmentOfStudentDto from './dto/get-review-of-assignment-of-student.dto';
 import GetReviewsOfAssignmentDto from './dto/get-reviews-of-assignment.dto';
@@ -62,6 +63,20 @@ export default class ReviewsService {
         studentId: dto.studentId,
       },
       relations: ['assignmentOfStudent', 'assignmentOfStudent.student'],
+    });
+  }
+
+  async getAllRequestedReviewOfStudent(dto: GetAllReviewOfStudentDto) {
+    return this.reviewRepository.find({
+      where: {
+        studentId: dto.studentId,
+        classId: dto.classId,
+      },
+      relations: [
+        'assignmentOfStudent',
+        'assignmentOfStudent.student',
+        'assignmentOfStudent.detail',
+      ],
     });
   }
 

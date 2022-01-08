@@ -17,6 +17,7 @@ import {
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import CreateReviewDto from './dto/create-review.dto';
 import FinalizeReviewDto from './dto/finalize-review.dto';
+import GetAllReviewOfStudentDto from './dto/get-all-review-in-a-class-of-student.dto';
 import GetAllCommentsOfReviewDto from './dto/get-comments-of-review.dto';
 import GetReviewOfAssignmentOfStudentDto from './dto/get-review-of-assignment-of-student.dto';
 import GetReviewsOfAssignmentDto from './dto/get-reviews-of-assignment.dto';
@@ -55,10 +56,18 @@ export default class ReviewsController {
     return this.reviewsService.getAllReviewsOfAssignment(dto);
   }
 
+  @ApiQuery({ type: GetAllReviewOfStudentDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtAccessGuard)
+  @Get('student/all')
+  async getAllRequestedReviewOfStudent(@Query() dto: GetAllReviewOfStudentDto) {
+    return this.reviewsService.getAllRequestedReviewOfStudent(dto);
+  }
+
   @ApiQuery({ type: GetReviewOfAssignmentOfStudentDto })
   @ApiBearerAuth()
   @UseGuards(JwtAccessGuard, AssignmentOfTeacherOrStudentGuard)
-  @Get('assignment/student')
+  @Get('student/assignment')
   async getReviewOfAssignmentOfStudent(
     @Query() dto: GetReviewOfAssignmentOfStudentDto,
   ) {
