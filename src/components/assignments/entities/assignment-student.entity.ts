@@ -1,4 +1,5 @@
 import UploadedStudentsEntity from '@components/classes/entities/uploaded-students.entity';
+import ReviewEntity from '@components/reviews/entities/reviews.entity';
 import {
   Column,
   Entity,
@@ -37,4 +38,9 @@ export default class AssignmentOfStudentEntity {
   @OneToOne(() => AssignmentsEntity, { createForeignKeyConstraints: false })
   @JoinColumn({ name: 'assignmentId' })
   detail?: AssignmentsEntity;
+
+  @OneToOne(() => ReviewEntity, (review) => review.assignmentOfStudent, {
+    createForeignKeyConstraints: false,
+  })
+  review?: ReviewEntity;
 }

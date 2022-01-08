@@ -1,4 +1,4 @@
-import AssignmentsModule from '@components/assignments/asignments.module';
+import AssignmentsModule from '@components/assignments/assignments.module';
 import { ClassesModule } from '@components/classes/classes.module';
 import UsersModule from '@components/users/users.module';
 import { Module } from '@nestjs/common';

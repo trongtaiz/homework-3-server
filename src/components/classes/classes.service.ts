@@ -292,7 +292,7 @@ export class ClassesService {
           classId: dto.classId,
           studentId: dto.studentId,
         },
-        relations: ['student', 'detail'],
+        relations: ['student', 'detail', 'review'],
       });
 
     data.forEach((e) => {

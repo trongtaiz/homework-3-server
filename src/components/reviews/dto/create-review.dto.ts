@@ -30,6 +30,5 @@ export default class CreateReviewDto {
   @ApiProperty({ type: Number })
   @IsInt()
   @IsNotEmpty()
-  @Type(() => String)
   expectedGrade!: number;
 }
