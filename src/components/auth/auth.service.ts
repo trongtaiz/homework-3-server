@@ -59,7 +59,10 @@ export default class AuthService {
     // send email
     const verifyToken = this.jwtService.sign(
       { id: newUser.id },
-      { secret: process.env.VERIFY_EMAIL_SECRET, expiresIn: 10 * 60 * 1000 },
+      {
+        secret: process.env.VERIFY_EMAIL_SECRET,
+        expiresIn: 24 * 60 * 60 * 1000,
+      },
     );
     await this.mailUtil.sendVerifyEmail(verifyToken, newUser.email!);
 
@@ -93,7 +96,7 @@ export default class AuthService {
     // send email
     const token = await this.jwtService.sign(
       { id: user.id },
-      { secret: process.env.FORGOT_PW_SECRET, expiresIn: 5 * 60 * 1000 },
+      { secret: process.env.FORGOT_PW_SECRET, expiresIn: 24 * 60 * 60 * 1000 },
     );
     await this.mailUtil.sendForgotPassword(token, email);
     return { message: 'Reset password link sent to email' };
