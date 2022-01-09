@@ -21,6 +21,7 @@ import { ParseFormDataMiddleware } from 'src/middlewares/parse-form-data.middlew
 import UploadedStudentsEntity from './entities/uploaded-students.entity';
 import UsersModule from '@components/users/users.module';
 import AssignmentsModule from '@components/assignments/assignments.module';
+import AssignmentOfStudentEntity from '@components/assignments/entities/assignment-student.entity';
 
 @Module({
   imports: [
@@ -31,10 +32,11 @@ import AssignmentsModule from '@components/assignments/assignments.module';
       TeacherClass,
       UserEntity,
       UploadedStudentsEntity,
+      AssignmentOfStudentEntity,
     ]),
     MailModule,
     UsersModule,
-    forwardRef(() => AssignmentsModule),
+    // forwardRef(() => AssignmentsModule),
   ],
   controllers: [ClassesController],
   providers: [

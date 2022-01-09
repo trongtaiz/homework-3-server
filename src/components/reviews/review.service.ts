@@ -1,5 +1,6 @@
 import AssignmentsService from '@components/assignments/assignments.service';
 import { ClassesService } from '@components/classes/classes.service';
+import { NotificationsService } from '@components/notifications/notifications.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
@@ -24,18 +25,36 @@ export default class ReviewsService {
     private readonly reviewRepository: Repository<ReviewEntity>,
     @InjectRepository(ReviewCommentEntity)
     private readonly reviewCommentRepository: Repository<ReviewCommentEntity>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async createReview(dto: CreateReviewDto) {
-    const newReview = this.reviewRepository.create({
-      assignmentId: dto.assignmentId,
-      studentId: dto.studentId,
-      classId: dto.classId,
-      expectedGrade: dto.expectedGrade,
-      explanation: dto.explanation,
-    });
+    const newReview = await this.reviewRepository.save(
+      this.reviewRepository.create({
+        assignmentId: dto.assignmentId,
+        studentId: dto.studentId,
+        classId: dto.classId,
+        expectedGrade: dto.expectedGrade,
+        explanation: dto.explanation,
+      }),
+    );
 
-    return this.reviewRepository.save(newReview);
+    const teachers = await this.classesService.getTeachersInClass(
+      newReview.classId,
+    );
+
+    // send push noti
+    for (const teacher of teachers) {
+      await this.notificationsService.createNotification({
+        receiverId: teacher.user_id,
+        classId: newReview.classId,
+        message: 'A new review has been requested',
+        subject: 'A new review has been requested',
+        link: `classes/${newReview.classId}/review-detail/${newReview.id}`,
+      });
+    }
+
+    return newReview;
   }
 
   async getAllReviewsOfClass(dto: GetReviewsOfClassDto) {
@@ -85,9 +104,43 @@ export default class ReviewsService {
   }
 
   async postReviewComment(userId: string, dto: PostReviewCommentDto) {
-    return this.reviewCommentRepository.save(
+    const comment = await this.reviewCommentRepository.save(
       this.reviewCommentRepository.create({ ...dto, from: userId }),
     );
+
+    const review = await this.reviewRepository.findOne({
+      where: {
+        id: comment.reviewId,
+      },
+      relations: ['student'],
+    });
+
+    const assignment = await this.assignmentService
+      .getAssignmentRepository()
+      .findOne({ id: review!.assignmentId });
+
+    const teachers = await this.classesService.getTeachersInClass(
+      review!.classId,
+    );
+    const participants = [
+      ...teachers.map((e) => e.user_id),
+      review!.student!.id,
+    ];
+
+    // send push noti in real-time
+    for (const pId of participants) {
+      if (pId !== comment.from) {
+        await this.notificationsService.createNotification({
+          subject: `New comment on review`,
+          message: `New comment on review of assignment ${assignment?.title}`,
+          classId: assignment!.classId,
+          receiverId: pId,
+          link: `/classes/${assignment!.classId}/review-detail/${review!.id}`,
+        });
+      }
+    }
+
+    return comment;
   }
 
   async getAllCommentsOfReview(dto: GetAllCommentsOfReviewDto) {
@@ -107,7 +160,7 @@ export default class ReviewsService {
   async finalizeReview(dto: FinalizeReviewDto) {
     const review = await this.reviewRepository.findOne({
       where: { id: dto.reviewId },
-      relations: ['assignmentOfStudent'],
+      relations: ['assignmentOfStudent', 'student'],
     });
 
     await this.reviewRepository.save({
@@ -116,11 +169,24 @@ export default class ReviewsService {
       finalGrade: dto.finalGrade,
     });
 
-    return this.assignmentService.getAssignmentOfStudentRepository().save({
-      studentId: review!.studentId,
-      assignmentId: review!.assignmentId,
-      achievedPoint: dto.finalGrade,
+    const assignmentOfStudent = await this.assignmentService
+      .getAssignmentOfStudentRepository()
+      .save({
+        studentId: review!.studentId,
+        assignmentId: review!.assignmentId,
+        achievedPoint: dto.finalGrade,
+      });
+
+    // send push noti
+    await this.notificationsService.createNotification({
+      classId: review!.classId,
+      receiverId: review!.student!.id,
+      message: 'Your teacher has finalize a decision on your review',
+      subject: 'A decision on your review',
+      link: `classes/${review!.classId}/review-detail/${review!.id}`,
     });
+
+    return assignmentOfStudent;
   }
 
   async getParticipantsOfReview(reviewId: string) {

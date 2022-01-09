@@ -1,5 +1,6 @@
 import AssignmentsModule from '@components/assignments/assignments.module';
 import { ClassesModule } from '@components/classes/classes.module';
+import { NotificationsModule } from '@components/notifications/notifications.module';
 import UsersModule from '@components/users/users.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,6 +16,7 @@ import ReviewsController from './reviews.controller';
     ClassesModule,
     AssignmentsModule,
     UsersModule,
+    NotificationsModule,
   ],
   controllers: [ReviewsController],
   providers: [ReviewsService, ReviewOfTeacherOrStudentGuard],

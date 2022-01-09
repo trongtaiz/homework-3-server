@@ -17,7 +17,7 @@ import { MailUtil } from '@utils/mail.util';
 import UploadedStudentEntity from './entities/uploaded-students.entity';
 import _ from 'lodash';
 import GetPointsOfStudentDto from './dto/get-points-of-student.dto';
-import AssignmentsService from '@components/assignments/assignments.service';
+import AssignmentOfStudentEntity from '@components/assignments/entities/assignment-student.entity';
 
 @Injectable()
 export class ClassesService {
@@ -33,7 +33,9 @@ export class ClassesService {
     private readonly mailUtil: MailUtil,
     @InjectRepository(UploadedStudentEntity)
     private uploadedStudentRepository: Repository<UploadedStudentEntity>,
-    private readonly assignmentsService: AssignmentsService,
+    // private readonly assignmentsService: AssignmentsService,
+    @InjectRepository(AssignmentOfStudentEntity)
+    private assignmentOfStudentRepository: Repository<AssignmentOfStudentEntity>,
   ) {}
 
   async createClass(userId, createClassInput: CreateClassDto) {
@@ -285,15 +287,13 @@ export class ClassesService {
   }
 
   async getAllPointsOfStudentOfClass(dto: GetPointsOfStudentDto) {
-    const data = await this.assignmentsService
-      .getAssignmentOfStudentRepository()
-      .find({
-        where: {
-          classId: dto.classId,
-          studentId: dto.studentId,
-        },
-        relations: ['student', 'detail', 'review'],
-      });
+    const data = await this.assignmentOfStudentRepository.find({
+      where: {
+        classId: dto.classId,
+        studentId: dto.studentId,
+      },
+      relations: ['student', 'detail', 'review'],
+    });
 
     data.forEach((e) => {
       if (!e.detail?.isFinalized) e.achievedPoint = -1;

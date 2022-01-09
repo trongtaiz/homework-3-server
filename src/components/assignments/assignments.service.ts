@@ -1,3 +1,5 @@
+import { ClassesService } from '@components/classes/classes.service';
+import { NotificationsService } from '@components/notifications/notifications.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
@@ -15,6 +17,8 @@ export default class AssignmentsService {
     private readonly assignmentsRepository: Repository<AssignmentsEntity>,
     @InjectRepository(AssignmentOfStudentEntity)
     private readonly assignmentOfStudentRepository: Repository<AssignmentOfStudentEntity>,
+    private readonly notificationsService: NotificationsService,
+    private readonly classesService: ClassesService,
   ) {}
 
   getAssignmentRepository() {
@@ -112,9 +116,32 @@ export default class AssignmentsService {
   }
 
   async finalizeAssignment(dto: FinalizeAssignmentDto) {
-    return this.assignmentsRepository.save({
+    const savedAssignment = await this.assignmentsRepository.save({
       id: dto.assignmentId,
       isFinalized: true,
     });
+
+    const assignment = await this.assignmentsRepository.findOne({
+      id: dto.assignmentId,
+    });
+
+    const allStudentsOfClass = await this.classesService.getStudentsInClass(
+      assignment!.classId,
+    );
+
+    // send push noti
+    for (const student of allStudentsOfClass) {
+      await this.notificationsService.createNotification({
+        classId: assignment!.classId,
+        receiverId: student.user_id,
+        message: `Assignment ${
+          assignment!.title
+        } has been finalized, go to see your grade`,
+        subject: 'Your teacher has finalized one assignment',
+        link: `/classes/${assignment!.classId}/grade`,
+      });
+    }
+
+    return assignment;
   }
 }

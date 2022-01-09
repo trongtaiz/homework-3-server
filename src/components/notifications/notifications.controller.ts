@@ -37,4 +37,9 @@ export class NotificationsController {
       receiverId,
     );
   }
+
+  @Post('test-send-noti')
+  async sendNotiToUser(@Body() dto: any) {
+    this.notificationsService.sendNotiToUser(dto.userId, dto.message);
+  }
 }
