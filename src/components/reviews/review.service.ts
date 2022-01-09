@@ -54,7 +54,11 @@ export default class ReviewsService {
       where: {
         classId: dto.classId,
       },
-      relations: ['assignmentOfStudent', 'assignmentOfStudent.student'],
+      relations: [
+        'assignmentOfStudent',
+        'assignmentOfStudent.student',
+        'assignmentOfStudent.detail',
+      ],
     });
   }
 
@@ -63,7 +67,11 @@ export default class ReviewsService {
       where: {
         assignmentId: dto.assignmentId,
       },
-      relations: ['assignmentOfStudent', 'assignmentOfStudent.student'],
+      relations: [
+        'assignmentOfStudent',
+        'assignmentOfStudent.student',
+        'assignmentOfStudent.detail',
+      ],
     });
   }
 
