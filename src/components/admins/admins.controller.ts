@@ -12,9 +12,11 @@ import { get } from 'lodash';
 import AdminsService from './admins.service';
 import AdminSignInDto from './dto/admin-sign-in.dto';
 import CreateAdminDto from './dto/create-admin.dto';
-import GetAdminDetailDto from './dto/get-admin-detal.dto';
+import GetAdminDetailDto from './dto/get-admin-detail.dto';
 import GetAllAdminsDto from './dto/get-all-admins.dto';
+import GetAllClassesDto from './dto/get-all-classes.dto';
 import GetAllUsersDto from './dto/get-all-user.dto';
+import GetClassDetailDto from './dto/get-class-detail.dto';
 import GetUserDetailDto from './dto/get-user-detail.dto';
 import MapStudentIdDto from './dto/map-student-id.dto';
 
@@ -62,5 +64,15 @@ export default class AdminsController {
   @Post('users/lock')
   async lockUser(@Body() LockUserDto) {
     return this.adminsService.lockUser(LockUserDto);
+  }
+
+  @Get('classes/all')
+  async getAllClasses(@Query() dto: GetAllClassesDto) {
+    return this.adminsService.getAllClasses(dto);
+  }
+
+  @Get('classes/detail')
+  async getClassDetail(@Query() dto: GetClassDetailDto) {
+    return this.adminsService.getClassDetail(dto);
   }
 }

@@ -6,16 +6,19 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  Index,
 } from 'typeorm';
 import User from '@components/users/entities/users.entity';
 import AssignmentEntity from '@components/assignments/entities/assignments.entity';
+import { AbstractEntity } from '@common/entities/abstract.entity';
 
 @Entity('Classes')
-export class Classes {
+export class Classes extends AbstractEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id!: string;
 
   @Column()
+  @Index({ fulltext: true })
   name!: string;
 
   @Column()
