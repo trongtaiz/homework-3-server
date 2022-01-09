@@ -57,12 +57,27 @@ export default class ReviewsService {
     return newReview;
   }
 
+  async getReviewDetail(id: string) {
+    return this.reviewRepository.findOne({
+      where: { id: id },
+      relations: [
+        'assignmentOfStudent',
+        'assignmentOfStudent.student',
+        'assignmentOfStudent.detail',
+      ],
+    });
+  }
+
   async getAllReviewsOfClass(dto: GetReviewsOfClassDto) {
     return this.reviewRepository.find({
       where: {
         classId: dto.classId,
       },
-      relations: ['assignmentOfStudent', 'assignmentOfStudent.student'],
+      relations: [
+        'assignmentOfStudent',
+        'assignmentOfStudent.student',
+        'assignmentOfStudent.detail',
+      ],
     });
   }
 
@@ -71,7 +86,11 @@ export default class ReviewsService {
       where: {
         assignmentId: dto.assignmentId,
       },
-      relations: ['assignmentOfStudent', 'assignmentOfStudent.student'],
+      relations: [
+        'assignmentOfStudent',
+        'assignmentOfStudent.student',
+        'assignmentOfStudent.detail',
+      ],
     });
   }
 

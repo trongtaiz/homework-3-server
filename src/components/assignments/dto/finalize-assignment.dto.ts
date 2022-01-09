@@ -6,4 +6,8 @@ export default class FinalizeAssignmentDto {
   @IsNotEmpty()
   @IsNumberString()
   assignmentId!: string;
+
+  @ApiProperty({ type: Boolean })
+  @IsNotEmpty()
+  isFinalized!: boolean;
 }

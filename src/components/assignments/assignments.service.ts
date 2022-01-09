@@ -118,7 +118,7 @@ export default class AssignmentsService {
   async finalizeAssignment(dto: FinalizeAssignmentDto) {
     const savedAssignment = await this.assignmentsRepository.save({
       id: dto.assignmentId,
-      isFinalized: true,
+      isFinalized: dto.isFinalized,
     });
 
     const assignment = await this.assignmentsRepository.findOne({

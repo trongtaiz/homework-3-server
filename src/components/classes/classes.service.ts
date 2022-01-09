@@ -264,16 +264,17 @@ export class ClassesService {
   }
 
   async getAllAssignmentPoints(classId: string) {
-    const data = await this.uploadedStudentRepository
-      .createQueryBuilder('std')
-      .leftJoinAndSelect('std.studentAccount', 'studentAccount')
-      // .leftJoinAndSelect('studentAccount.user', 'user')
-      .leftJoinAndSelect('std.assignments', 'assignments')
-      .leftJoinAndSelect('assignments.detail', 'detail')
-      .where(`std.classId = '${classId}'`)
-      .getMany();
-
-    // console.log(data);
+    const data = await this.uploadedStudentRepository.find({
+      where: {
+        classId: classId,
+      },
+      relations: [
+        'studentAccount',
+        'assignments',
+        'assignments.detail',
+        'assignments.review',
+      ],
+    });
 
     data.forEach((e) => {
       if (e.studentAccount)
