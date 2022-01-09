@@ -7,7 +7,7 @@ export default class AdminsEntity extends AbstractEntity {
   id!: string;
 
   @Column()
-  @Index({ unique: true, fulltext: true })
+  @Index({ fulltext: true })
   email!: string;
 
   @Column()

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -12,6 +13,9 @@ import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import _ from 'lodash';
 import CreateAdminDto from './dto/create-admin.dto';
+import GetAllAdminsDto from './dto/get-all-admins.dto';
+import GetAdminDetailDto from './dto/get-admin-detal.dto';
+import moment from 'moment';
 @Injectable()
 export default class AdminsService implements OnModuleInit {
   constructor(
@@ -80,5 +84,55 @@ export default class AdminsService implements OnModuleInit {
     );
 
     return _.omit(newAdmin, ['password']);
+  }
+
+  async getAllAdmins(dto: GetAllAdminsDto) {
+    console.log(dto);
+    let page = dto.page || 1;
+    let pageSize = dto.pageSize || 10;
+
+    const query = this.adminsRepository.createQueryBuilder('admin');
+
+    if (dto.keyword)
+      query
+        .where(`MATCH(email) AGAINST ('${dto.keyword}' IN BOOLEAN MODE)`)
+        .orWhere(`MATCH(name) AGAINST ('${dto.keyword}' IN BOOLEAN MODE)`);
+
+    if (dto.sortBy) {
+      if (dto.sortBy.startsWith('-'))
+        query.orderBy(dto.sortBy.slice(1), 'DESC');
+      else {
+        if (dto.sortBy.startsWith('+'))
+          query.orderBy(dto.sortBy.slice(1), 'ASC');
+        else query.orderBy(dto.sortBy, 'ASC');
+      }
+    }
+
+    const [data, totalRecords] = await query
+      .offset((page - 1) * pageSize)
+      .limit(pageSize)
+      .getManyAndCount();
+
+    return {
+      data: data.map((e) => ({
+        ..._.omit(e, ['password']),
+        createdAt: moment(e.createdAt).format('YYYY-MM-DD'),
+      })),
+      pageInfo: {
+        pageIndex: page,
+        pageSize: pageSize,
+        totalPages: Math.ceil(totalRecords / pageSize),
+        totalRecords,
+      },
+    };
+  }
+
+  async getAdminDetail(dto: GetAdminDetailDto) {
+    const admin = await this.adminsRepository.findOne({ id: dto.adminId });
+    if (!admin) throw new NotFoundException();
+    return {
+      ..._.omit(admin, ['password']),
+      createdAt: moment(admin.createdAt).format('YYYY-MM-DD'),
+    };
   }
 }
