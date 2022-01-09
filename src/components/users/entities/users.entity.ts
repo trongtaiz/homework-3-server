@@ -16,7 +16,7 @@ export default class UserEntity extends AbstractEntity {
 
   @ApiProperty({ type: String, maxLength: 64 })
   @Column({ length: 64, nullable: true })
-  @Index({ unique: true })
+  @Index({ fulltext: true })
   email?: string;
 
   @ApiProperty({ type: String, maxLength: 64 })
@@ -25,6 +25,7 @@ export default class UserEntity extends AbstractEntity {
 
   @ApiProperty({ type: String, maxLength: 64 })
   @Column({ length: 64, nullable: true })
+  @Index({ fulltext: true })
   name?: string;
 
   @Column({ length: 64, nullable: true })
@@ -37,6 +38,9 @@ export default class UserEntity extends AbstractEntity {
 
   @Column({ default: false })
   isActive!: boolean;
+
+  @Column({ default: false })
+  isLocked!: boolean;
 
   // @ApiProperty({ type: String, default: RolesEnum.STUDENT, enum: RolesEnum })
   // @Column({ type: 'enum', enum: RolesEnum, default: RolesEnum.STUDENT })

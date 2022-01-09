@@ -1,3 +1,4 @@
+import UserEntity from '@components/users/entities/users.entity';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -8,7 +9,7 @@ import AdminsEntity from './entities/admins.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AdminsEntity]),
+    TypeOrmModule.forFeature([AdminsEntity, UserEntity]),
     JwtModule.register({}),
     ConfigModule,
   ],

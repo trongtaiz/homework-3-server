@@ -16,11 +16,18 @@ import CreateAdminDto from './dto/create-admin.dto';
 import GetAllAdminsDto from './dto/get-all-admins.dto';
 import GetAdminDetailDto from './dto/get-admin-detal.dto';
 import moment from 'moment';
+import GetAllUsersDto from './dto/get-all-user.dto';
+import UserEntity from '@components/users/entities/users.entity';
+import GetUserDetailDto from './dto/get-user-detail.dto';
+import MapStudentIdDto from './dto/map-student-id.dto';
+import LockUserDto from './dto/lock-user.dto';
 @Injectable()
 export default class AdminsService implements OnModuleInit {
   constructor(
     @InjectRepository(AdminsEntity)
     private readonly adminsRepository: Repository<AdminsEntity>,
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -87,7 +94,6 @@ export default class AdminsService implements OnModuleInit {
   }
 
   async getAllAdmins(dto: GetAllAdminsDto) {
-    console.log(dto);
     let page = dto.page || 1;
     let pageSize = dto.pageSize || 10;
 
@@ -134,5 +140,68 @@ export default class AdminsService implements OnModuleInit {
       ..._.omit(admin, ['password']),
       createdAt: moment(admin.createdAt).format('YYYY-MM-DD'),
     };
+  }
+
+  async getAllUsers(dto: GetAllUsersDto) {
+    let page = dto.page || 1;
+    let pageSize = dto.pageSize || 10;
+
+    const query = this.usersRepository.createQueryBuilder('user');
+
+    if (dto.keyword)
+      query
+        .where(`MATCH(email) AGAINST ('${dto.keyword}' IN BOOLEAN MODE)`)
+        .orWhere(`MATCH(name) AGAINST ('${dto.keyword}' IN BOOLEAN MODE)`);
+
+    if (dto.sortBy) {
+      if (dto.sortBy.startsWith('-'))
+        query.orderBy(dto.sortBy.slice(1), 'DESC');
+      else {
+        if (dto.sortBy.startsWith('+'))
+          query.orderBy(dto.sortBy.slice(1), 'ASC');
+        else query.orderBy(dto.sortBy, 'ASC');
+      }
+    }
+
+    const [data, totalRecords] = await query
+      .offset((page - 1) * pageSize)
+      .limit(pageSize)
+      .getManyAndCount();
+
+    return {
+      data: data.map((e) => ({
+        ..._.omit(e, ['password']),
+        createdAt: moment(e.createdAt).format('YYYY-MM-DD'),
+      })),
+      pageInfo: {
+        pageIndex: page,
+        pageSize: pageSize,
+        totalPages: Math.ceil(totalRecords / pageSize),
+        totalRecords,
+      },
+    };
+  }
+
+  async getUserDetail(dto: GetUserDetailDto) {
+    const user = await this.usersRepository.findOne({ id: dto.userId });
+    if (!user) throw new NotFoundException();
+    return {
+      ..._.omit(user, ['password']),
+      createdAt: moment(user.createdAt).format('YYYY-MM-DD'),
+    };
+  }
+
+  async mapStudentId(dto: MapStudentIdDto) {
+    return this.usersRepository.save({
+      id: dto.userId,
+      studentId: dto.studentId || undefined,
+    });
+  }
+
+  async lockUser(dto: LockUserDto) {
+    return this.usersRepository.save({
+      id: dto.userId,
+      isLocked: dto.isLocked,
+    });
   }
 }
