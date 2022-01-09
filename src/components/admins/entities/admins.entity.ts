@@ -12,4 +12,8 @@ export default class AdminsEntity extends AbstractEntity {
 
   @Column()
   password!: string;
+
+  @Column()
+  @Index({ fulltext: true })
+  name!: string;
 }

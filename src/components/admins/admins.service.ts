@@ -11,7 +11,7 @@ import AdminsEntity from './entities/admins.entity';
 import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import _ from 'lodash';
-import CreateAdminDto from './dto/admin-sign-up.dto';
+import CreateAdminDto from './dto/create-admin.dto';
 @Injectable()
 export default class AdminsService implements OnModuleInit {
   constructor(
@@ -74,6 +74,7 @@ export default class AdminsService implements OnModuleInit {
     const newAdmin = await this.adminsRepository.save(
       this.adminsRepository.create({
         email: dto.email,
+        name: dto.name,
         password: hashedPassword,
       }),
     );

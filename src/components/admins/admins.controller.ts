@@ -3,7 +3,7 @@ import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import AdminsService from './admins.service';
 import AdminSignInDto from './dto/admin-sign-in.dto';
-import CreateAdminDto from './dto/admin-sign-up.dto';
+import CreateAdminDto from './dto/create-admin.dto';
 
 @ApiTags('Admins')
 @UseInterceptors(WrapResponseInterceptor)
