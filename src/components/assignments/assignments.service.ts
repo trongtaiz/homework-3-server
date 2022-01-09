@@ -114,7 +114,7 @@ export default class AssignmentsService {
   async finalizeAssignment(dto: FinalizeAssignmentDto) {
     return this.assignmentsRepository.save({
       id: dto.assignmentId,
-      isFinalized: true,
+      isFinalized: dto.isFinalized,
     });
   }
 }

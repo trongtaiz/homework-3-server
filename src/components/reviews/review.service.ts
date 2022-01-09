@@ -38,6 +38,17 @@ export default class ReviewsService {
     return this.reviewRepository.save(newReview);
   }
 
+  async getReviewDetail(id: string) {
+    return this.reviewRepository.findOne({
+      where: { id: id },
+      relations: [
+        'assignmentOfStudent',
+        'assignmentOfStudent.student',
+        'assignmentOfStudent.detail',
+      ],
+    });
+  }
+
   async getAllReviewsOfClass(dto: GetReviewsOfClassDto) {
     return this.reviewRepository.find({
       where: {

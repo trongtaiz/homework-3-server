@@ -40,6 +40,13 @@ export default class ReviewsController {
     return this.reviewsService.createReview(dto);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAccessGuard, ReviewOfTeacherOrStudentGuard)
+  @Get()
+  async getReviewDetail(@Query('reviewId') reviewId: string) {
+    return this.reviewsService.getReviewDetail(reviewId);
+  }
+
   @ApiQuery({ type: GetReviewsOfClassDto })
   @ApiBearerAuth()
   @Get('class')

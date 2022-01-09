@@ -140,7 +140,7 @@ export default class AssignmentsController {
   @ApiBody({ type: FinalizeAssignmentDto })
   @UseGuards(JwtAccessGuard, AssignmentOfTeacherGuard)
   @Post('finalize')
-  async finalizeGradeOfAssignment(dto: FinalizeAssignmentDto) {
+  async finalizeGradeOfAssignment(@Body() dto: FinalizeAssignmentDto) {
     return this.assignmentsService.finalizeAssignment(dto);
   }
 }
