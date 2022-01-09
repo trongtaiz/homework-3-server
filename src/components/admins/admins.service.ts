@@ -14,13 +14,16 @@ import { JwtService } from '@nestjs/jwt';
 import _ from 'lodash';
 import CreateAdminDto from './dto/create-admin.dto';
 import GetAllAdminsDto from './dto/get-all-admins.dto';
-import GetAdminDetailDto from './dto/get-admin-detal.dto';
+import GetAdminDetailDto from './dto/get-admin-detail.dto';
 import moment from 'moment';
 import GetAllUsersDto from './dto/get-all-user.dto';
 import UserEntity from '@components/users/entities/users.entity';
 import GetUserDetailDto from './dto/get-user-detail.dto';
 import MapStudentIdDto from './dto/map-student-id.dto';
 import LockUserDto from './dto/lock-user.dto';
+import { Classes as ClassesEntity } from '@components/classes/entities/classes.entity';
+import GetClassDetailDto from './dto/get-class-detail.dto';
+import GetAllClassesDto from './dto/get-all-classes.dto';
 @Injectable()
 export default class AdminsService implements OnModuleInit {
   constructor(
@@ -28,6 +31,8 @@ export default class AdminsService implements OnModuleInit {
     private readonly adminsRepository: Repository<AdminsEntity>,
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
+    @InjectRepository(ClassesEntity)
+    private readonly classesRepository: Repository<ClassesEntity>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -203,5 +208,62 @@ export default class AdminsService implements OnModuleInit {
       id: dto.userId,
       isLocked: dto.isLocked,
     });
+  }
+
+  async getAllClasses(dto: GetAllClassesDto) {
+    let page = dto.page || 1;
+    let pageSize = dto.pageSize || 10;
+
+    const query = this.classesRepository.createQueryBuilder('classes');
+
+    if (dto.keyword)
+      query.where(
+        `MATCH(classes.name) AGAINST ('${dto.keyword}' IN BOOLEAN MODE)`,
+      );
+
+    if (dto.sortBy) {
+      if (dto.sortBy.startsWith('-'))
+        query.orderBy(`classes.${dto.sortBy.slice(1)}`, 'DESC');
+      else {
+        if (dto.sortBy.startsWith('+'))
+          query.orderBy(`classes.${dto.sortBy.slice(1)}`, 'ASC');
+        else query.orderBy(`classes.${dto.sortBy}`, 'ASC');
+      }
+    }
+
+    const [data, totalRecords] = await query
+      .leftJoinAndSelect('classes.user', 'user')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+
+    return {
+      data: data.map((e) => ({
+        ...e,
+        user: _.omit(e.user, ['password']),
+        createdAt: moment(e.createdAt).format('YYYY-MM-DD'),
+      })),
+      pageInfo: {
+        pageIndex: page,
+        pageSize: pageSize,
+        totalPages: Math.ceil(totalRecords / pageSize),
+        totalRecords,
+      },
+    };
+  }
+
+  async getClassDetail(dto: GetClassDetailDto) {
+    const foundClass = await this.classesRepository.findOne({
+      where: {
+        id: dto.classId,
+      },
+      relations: ['user'],
+    });
+    if (!foundClass) throw new NotFoundException();
+    return {
+      ...foundClass,
+      user: _.omit(foundClass.user, ['password']),
+      createdAt: moment(foundClass.createdAt).format('YYYY-MM-DD'),
+    };
   }
 }
