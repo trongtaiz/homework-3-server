@@ -99,8 +99,8 @@ export default class AdminsService implements OnModuleInit {
   }
 
   async getAllAdmins(dto: GetAllAdminsDto) {
-    let page = dto.page || 1;
-    let pageSize = dto.pageSize || 10;
+    const page = dto.page || 1;
+    const pageSize = dto.pageSize || 10;
 
     const query = this.adminsRepository.createQueryBuilder('admin');
 
@@ -119,10 +119,7 @@ export default class AdminsService implements OnModuleInit {
       }
     }
 
-    const [data, totalRecords] = await query
-      .offset((page - 1) * pageSize)
-      .limit(pageSize)
-      .getManyAndCount();
+    const [data, totalRecords] = await query.getManyAndCount();
 
     return {
       data: data.map((e) => ({
@@ -148,8 +145,8 @@ export default class AdminsService implements OnModuleInit {
   }
 
   async getAllUsers(dto: GetAllUsersDto) {
-    let page = dto.page || 1;
-    let pageSize = dto.pageSize || 10;
+    const page = dto.page || 1;
+    const pageSize = dto.pageSize || 10;
 
     const query = this.usersRepository.createQueryBuilder('user');
 
@@ -168,10 +165,7 @@ export default class AdminsService implements OnModuleInit {
       }
     }
 
-    const [data, totalRecords] = await query
-      .offset((page - 1) * pageSize)
-      .limit(pageSize)
-      .getManyAndCount();
+    const [data, totalRecords] = await query.getManyAndCount();
 
     return {
       data: data.map((e) => ({
@@ -211,8 +205,8 @@ export default class AdminsService implements OnModuleInit {
   }
 
   async getAllClasses(dto: GetAllClassesDto) {
-    let page = dto.page || 1;
-    let pageSize = dto.pageSize || 10;
+    const page = dto.page || 1;
+    const pageSize = dto.pageSize || 10;
 
     const query = this.classesRepository.createQueryBuilder('classes');
 
@@ -233,8 +227,6 @@ export default class AdminsService implements OnModuleInit {
 
     const [data, totalRecords] = await query
       .leftJoinAndSelect('classes.user', 'user')
-      .skip((page - 1) * pageSize)
-      .take(pageSize)
       .getManyAndCount();
 
     return {
