@@ -3,7 +3,6 @@ import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 export abstract class AbstractEntity {
   @CreateDateColumn({
     type: 'timestamp',
-    select: false,
   })
   createdAt!: Date;
 
