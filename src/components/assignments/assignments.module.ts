@@ -17,12 +17,15 @@ import AssignmentOfStudentGuard from './guards/assignment-of-student.guard';
 import UsersModule from '@components/users/users.module';
 import AssignmentOfUploadedStudentGuard from './guards/assignment-of-uploaded-student.guard';
 import AssignmentOfTeacherOrStudentGuard from './guards/assignment-of-teacher-or-student.guard';
+import { NotificationsModule } from '@components/notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([AssignmentsEntity, AssignmentOfStudentEntity]),
-    forwardRef(() => ClassesModule),
     UsersModule,
+    NotificationsModule,
+    forwardRef(() => ClassesModule),
+    // ClassesModule,
   ],
   providers: [
     AssignmentsService,
