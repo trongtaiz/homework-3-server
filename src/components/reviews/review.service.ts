@@ -105,9 +105,21 @@ export default class ReviewsService {
   }
 
   async finalizeReview(dto: FinalizeReviewDto) {
-    return this.reviewRepository.save({
+    const review = await this.reviewRepository.findOne({
+      where: { id: dto.reviewId },
+      relations: ['assignmentOfStudent'],
+    });
+
+    await this.reviewRepository.save({
       id: dto.reviewId,
+      prevGrade: review?.assignmentOfStudent?.achievedPoint,
       finalGrade: dto.finalGrade,
+    });
+
+    return this.assignmentService.getAssignmentOfStudentRepository().save({
+      studentId: review!.studentId,
+      assignmentId: review!.assignmentId,
+      achievedPoint: dto.finalGrade,
     });
   }
 

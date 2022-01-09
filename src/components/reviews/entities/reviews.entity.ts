@@ -54,4 +54,7 @@ export default class ReviewEntity extends AbstractEntity {
   })
   @JoinColumn([{ name: 'studentId', referencedColumnName: 'studentId' }])
   student?: UserEntity;
+
+  @Column({ nullable: true })
+  prevGrade?: number;
 }
