@@ -55,6 +55,7 @@ export default class AdminsService implements OnModuleInit {
       this.adminsRepository.create({
         email: rootAdminEmail,
         password: hashedPassword,
+        name: 'Root',
       }),
     );
   }

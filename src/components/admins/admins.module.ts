@@ -7,6 +7,7 @@ import AdminsController from './admins.controller';
 import AdminsService from './admins.service';
 import AdminsEntity from './entities/admins.entity';
 import { Classes as ClassesEntity } from '@components/classes/entities/classes.entity';
+import AdminAccessStrategy from './strategies/admin-access.strategy';
 @Module({
   imports: [
     TypeOrmModule.forFeature([AdminsEntity, UserEntity, ClassesEntity]),
@@ -14,7 +15,7 @@ import { Classes as ClassesEntity } from '@components/classes/entities/classes.e
     ConfigModule,
   ],
   controllers: [AdminsController],
-  providers: [AdminsService],
+  providers: [AdminsService, AdminAccessStrategy],
   exports: [AdminsService],
 })
 export default class AdminsModule {}
