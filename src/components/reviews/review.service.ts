@@ -50,7 +50,7 @@ export default class ReviewsService {
         classId: newReview.classId,
         message: 'A new review has been requested',
         subject: 'A new review has been requested',
-        link: `classes/${newReview.classId}/review-detail/${newReview.id}`,
+        link: `/classes/${newReview.classId}/review-detail/${newReview.id}`,
       });
     }
 
@@ -202,7 +202,7 @@ export default class ReviewsService {
       receiverId: review!.student!.id,
       message: 'Your teacher has finalize a decision on your review',
       subject: 'A decision on your review',
-      link: `classes/${review!.classId}/review-detail/${review!.id}`,
+      link: `/classes/${review!.classId}/review-detail/${review!.id}`,
     });
 
     return assignmentOfStudent;

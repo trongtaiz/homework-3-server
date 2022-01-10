@@ -129,17 +129,19 @@ export default class AssignmentsService {
       assignment!.classId,
     );
 
-    // send push noti
-    for (const student of allStudentsOfClass) {
-      await this.notificationsService.createNotification({
-        classId: assignment!.classId,
-        receiverId: student.user_id,
-        message: `Assignment ${
-          assignment!.title
-        } has been finalized, go to see your grade`,
-        subject: 'Your teacher has finalized one assignment',
-        link: `/classes/${assignment!.classId}/grade`,
-      });
+    if (dto.isFinalized) {
+      // send push noti
+      for (const student of allStudentsOfClass) {
+        await this.notificationsService.createNotification({
+          classId: assignment!.classId,
+          receiverId: student.user_id,
+          message: `Assignment ${
+            assignment!.title
+          } has been finalized, go to see your grade`,
+          subject: 'Your teacher has finalized one assignment',
+          link: `/classes/${assignment!.classId}/grade`,
+        });
+      }
     }
 
     return assignment;
