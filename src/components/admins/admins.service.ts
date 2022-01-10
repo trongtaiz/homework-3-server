@@ -24,6 +24,9 @@ import LockUserDto from './dto/lock-user.dto';
 import { Classes as ClassesEntity } from '@components/classes/entities/classes.entity';
 import GetClassDetailDto from './dto/get-class-detail.dto';
 import GetAllClassesDto from './dto/get-all-classes.dto';
+import GetClassesOfUserDto from './dto/get-classes-of-user.dto';
+import { StudentClass } from '@components/classes/entities/studentClass.entity';
+import { TeacherClass } from '@components/classes/entities/teacherClass.entity';
 @Injectable()
 export default class AdminsService implements OnModuleInit {
   constructor(
@@ -34,6 +37,10 @@ export default class AdminsService implements OnModuleInit {
     @InjectRepository(ClassesEntity)
     private readonly classesRepository: Repository<ClassesEntity>,
     private readonly jwtService: JwtService,
+    @InjectRepository(StudentClass)
+    private studentClassRepository: Repository<StudentClass>,
+    @InjectRepository(TeacherClass)
+    private teacherClassRepository: Repository<TeacherClass>,
   ) {}
 
   async onModuleInit() {
@@ -257,6 +264,27 @@ export default class AdminsService implements OnModuleInit {
       ...foundClass,
       user: _.omit(foundClass.user, ['password']),
       createdAt: moment(foundClass.createdAt).format('YYYY-MM-DD'),
+    };
+  }
+
+  async getClassesOfUser(dto: GetClassesOfUserDto) {
+    const asTeachers = await this.teacherClassRepository.find({
+      where: {
+        user_id: dto.userId,
+      },
+      relations: ['class'],
+    });
+
+    const asStudents = await this.studentClassRepository.find({
+      where: {
+        user_id: dto.userId,
+      },
+      relations: ['class'],
+    });
+
+    return {
+      asTeachers: asTeachers.map((e) => e.class),
+      asStudents: asStudents.map((e) => e.class),
     };
   }
 }

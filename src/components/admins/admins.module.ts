@@ -8,9 +8,18 @@ import AdminsService from './admins.service';
 import AdminsEntity from './entities/admins.entity';
 import { Classes as ClassesEntity } from '@components/classes/entities/classes.entity';
 import AdminAccessStrategy from './strategies/admin-access.strategy';
+import { ClassesModule } from '@components/classes/classes.module';
+import { TeacherClass } from '@components/classes/entities/teacherClass.entity';
+import { StudentClass } from '@components/classes/entities/studentClass.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AdminsEntity, UserEntity, ClassesEntity]),
+    TypeOrmModule.forFeature([
+      AdminsEntity,
+      UserEntity,
+      ClassesEntity,
+      StudentClass,
+      TeacherClass,
+    ]),
     JwtModule.register({}),
     ConfigModule,
   ],
