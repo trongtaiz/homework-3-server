@@ -199,10 +199,15 @@ export default class AdminsService implements OnModuleInit {
   }
 
   async mapStudentId(dto: MapStudentIdDto) {
-    return this.usersRepository.save({
+    await this.usersRepository.update(
+      { id: dto.userId },
+      { studentId: dto.studentId },
+    );
+
+    const student = await this.usersRepository.findOne({
       id: dto.userId,
-      studentId: dto.studentId || undefined,
     });
+    return _.omit(student, ['password']);
   }
 
   async lockUser(dto: LockUserDto) {
