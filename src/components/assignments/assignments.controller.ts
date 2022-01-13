@@ -32,6 +32,7 @@ import UploadAssignmentPointDto from './dto/upload-assignment-point.dto';
 import UpdateAchievedPointDto from './dto/update-achieved-point.dto';
 import express from 'express';
 import FinalizeAssignmentDto from './dto/finalize-assignment.dto';
+import UpdateAllAssignmentsDto from './dto/update-all-assignments.dto';
 @ApiTags('Assignments')
 @Controller('assignments')
 export default class AssignmentsController {
@@ -63,6 +64,14 @@ export default class AssignmentsController {
     // );
 
     return this.assignmentsService.updateAssignment(dto);
+  }
+
+  @ApiBody({ type: UpdateAllAssignmentsDto })
+  @UseInterceptors(WrapResponseInterceptor)
+  @UseGuards(JwtAccessGuard)
+  @Patch('all')
+  async updateAllAssignments(@Body() dto: UpdateAllAssignmentsDto) {
+    return this.assignmentsService.updateAllAssignments(dto);
   }
 
   @ApiBody({ type: RemoveAssignmentDto })

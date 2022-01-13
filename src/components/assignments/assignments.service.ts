@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Repository } from 'typeorm';
 import CreateAssignmentDto from './dto/create-assignment.dto';
 import FinalizeAssignmentDto from './dto/finalize-assignment.dto';
+import UpdateAllAssignmentsDto from './dto/update-all-assignments.dto';
 import UpdateAssignmentDto from './dto/update-assignment.dto';
 import AssignmentOfStudentEntity from './entities/assignment-student.entity';
 import AssignmentsEntity from './entities/assignments.entity';
@@ -59,6 +60,35 @@ export default class AssignmentsService {
     );
 
     return this.assignmentsRepository.findOne(dto.id);
+  }
+
+  async updateAllAssignments(dto: UpdateAllAssignmentsDto) {
+    console.log('UpdateAllAssignmentsDto', dto);
+    const assignments = await this.assignmentsRepository.find({
+      classId: dto.classId,
+    });
+
+    const currentIds = assignments.map((assignment) => assignment.id);
+    const newIds = dto.assignments.map((assignment) => assignment.id);
+
+    for (const item of currentIds) {
+      if (!newIds.includes(item)) {
+        console.log('deleteAssignment', item);
+        this.deleteAssignment(item);
+      }
+    }
+    for (let i = 0; i < newIds.length; i++) {
+      if (newIds[i] == 'new') {
+        const { title, point, order } = dto.assignments[i];
+        console.log('createAssignment', title);
+        this.createAssignment({
+          classId: dto.classId,
+          title: title || '',
+          point: point || 0,
+          order: order || 0,
+        });
+      } else this.updateAssignment(dto.assignments[i]);
+    }
   }
 
   async isAssignmentOfClass(assignmentId: string, classId: string) {

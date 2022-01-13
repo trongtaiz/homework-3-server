@@ -9,7 +9,7 @@ import { Classes } from './entities/classes.entity';
 import { StudentClass } from './entities/studentClass.entity';
 import { TeacherClass } from './entities/teacherClass.entity';
 import UserEntity from '@components/users/entities/users.entity';
-import { Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { CreateClassDto } from './dto/createClass.dto';
 import { RolesEnum } from '@decorators/roles.decorator';
 import JWT_CONST from '@common/constants/jwt.constant';
@@ -18,6 +18,7 @@ import UploadedStudentEntity from './entities/uploaded-students.entity';
 import _ from 'lodash';
 import GetPointsOfStudentDto from './dto/get-points-of-student.dto';
 import AssignmentOfStudentEntity from '@components/assignments/entities/assignment-student.entity';
+import AssignmentsEntity from '@components/assignments/entities/assignments.entity';
 
 @Injectable()
 export class ClassesService {
@@ -36,6 +37,8 @@ export class ClassesService {
     // private readonly assignmentsService: AssignmentsService,
     @InjectRepository(AssignmentOfStudentEntity)
     private assignmentOfStudentRepository: Repository<AssignmentOfStudentEntity>,
+    @InjectRepository(AssignmentsEntity)
+    private assignmentsRepository: Repository<AssignmentsEntity>,
   ) {}
 
   async createClass(userId, createClassInput: CreateClassDto) {
@@ -93,7 +96,12 @@ export class ClassesService {
       user_id: studentId,
     });
 
-    if (isStudentInClass) {
+    const isTeacherInClass = await this.teacherClassRepository.findOne({
+      class_id: classId,
+      user_id: studentId,
+    });
+
+    if (isStudentInClass || isTeacherInClass) {
       return;
     }
 
@@ -104,6 +112,38 @@ export class ClassesService {
 
     return this.studentClassRepository.save({
       class_id: classId,
+      user_id: studentId,
+    });
+  }
+
+  async joinByCode({ studentId, code }) {
+    if (code.length != 7) return { error: 'This code is invalid' };
+
+    const classToJoin = await this.classesRepository.findOne({
+      invite_id: Like(`${code}%`),
+    });
+
+    console.log('classToJoin', classToJoin);
+    if (!classToJoin) return { error: 'This code is invalid' };
+
+    const classId = classToJoin?.id || '';
+
+    const isTeacherInClass = await this.teacherClassRepository.findOne({
+      class_id: classId,
+      user_id: studentId,
+    });
+
+    const isStudentInClass = await this.studentClassRepository.findOne({
+      class_id: parseInt(classId),
+      user_id: studentId,
+    });
+
+    if (isStudentInClass || isTeacherInClass) {
+      return { error: "You've already joined this class" };
+    }
+
+    return this.studentClassRepository.save({
+      class_id: parseInt(classId),
       user_id: studentId,
     });
   }
@@ -288,9 +328,16 @@ export class ClassesService {
   }
 
   async getAllPointsOfStudentOfClass(dto: GetPointsOfStudentDto) {
+    const assignments = await this.assignmentsRepository.find({
+      where: { classId: dto.classId },
+      order: {
+        order: 'ASC',
+      },
+    });
+
     const data = await this.assignmentOfStudentRepository.find({
       where: {
-        classId: dto.classId,
+        assignmentId: In(assignments.map((i) => i.id)),
         studentId: dto.studentId,
       },
       relations: ['student', 'detail', 'review'],

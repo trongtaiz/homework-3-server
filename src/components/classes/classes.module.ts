@@ -22,6 +22,7 @@ import UploadedStudentsEntity from './entities/uploaded-students.entity';
 import UsersModule from '@components/users/users.module';
 import AssignmentsModule from '@components/assignments/assignments.module';
 import AssignmentOfStudentEntity from '@components/assignments/entities/assignment-student.entity';
+import AssignmentsEntity from '@components/assignments/entities/assignments.entity';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import AssignmentOfStudentEntity from '@components/assignments/entities/assignme
       UserEntity,
       UploadedStudentsEntity,
       AssignmentOfStudentEntity,
+      AssignmentsEntity,
     ]),
     MailModule,
     UsersModule,

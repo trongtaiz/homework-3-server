@@ -58,6 +58,16 @@ export class ClassesController {
     });
   }
 
+  @UseGuards(JwtAccessGuard)
+  @Get('/join-by-code') // ?inviteId=...&?classId=...
+  joinByCode(@AuthUser() user: any, @Query() query) {
+    const { code } = query;
+    return this.classesService.joinByCode({
+      studentId: user.id,
+      code,
+    });
+  }
+
   @Get('/join-by-email/:token')
   assignTeacher(@Param('token') token: string) {
     return this.classesService.joinByEmail(token);
